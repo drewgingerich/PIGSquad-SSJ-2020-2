@@ -1,27 +1,50 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 [System.Serializable]
 public struct Sequence
 {
 	public int LaneCount { get { return lanes.Length; } }
-	public int LaneLength { get { return lanes[0].Length; } }
+	public int StepCount { get { return lanes[0].Length; } }
 
 	[SerializeField]
 	private Lane[] lanes;
 
-	public Sequence(int laneCount, int length)
+	public Sequence(int numLanes = 3, int numSteps = 4)
 	{
-		lanes = new Lane[length];
+		lanes = new Lane[numLanes];
 		// lanes = new Lane[lanes];
-		for (int i = 0; i < laneCount; i++)
+		for (int i = 0; i < lanes.Length; i++)
 		{
-			ResetLane(i);
+			lanes[i] = new Lane(numSteps);
 		}
 	}
 
-	public Sequence(Lane[] lanes)
+	private Sequence(Lane[] lanes)
 	{
-		this.lanes = lanes;
+		var numLanes = lanes.Length;
+		var numSteps = lanes[0].Length;
+
+		this.lanes = new Lane[numLanes];
+
+		for (int i = 0; i < numLanes; i++)
+		{
+			this.lanes[i] = new Lane(numLanes);
+			for (int j = 0; j < numSteps; j++)
+			{
+				this.lanes[i][j] = lanes[i][j];
+			}
+		}
+	}
+
+	public bool this[int lane, int step]
+	{
+		get { return lanes[lane][step]; }
+	}
+
+	public bool GetValue(int laneIndex, int stepIndex)
+	{
+		return lanes[laneIndex][stepIndex];
 	}
 
 	public Sequence Copy()
@@ -29,64 +52,23 @@ public struct Sequence
 		return new Sequence(lanes);
 	}
 
-	public bool Get(int laneIndex, int stepIndex)
+	[System.Serializable]
+	private struct Lane
 	{
-		return lanes[laneIndex].Get(stepIndex);
-	}
+		[SerializeField]
+		private bool[] steps;
 
-	public void Set(int laneIndex, int stepIndex, bool value)
-	{
-		lanes[laneIndex].Set(stepIndex, value);
-	}
-
-	public void SetLane(int index, Lane lane)
-	{
-		Debug.Assert(lane.Length == LaneLength);
-		lanes[index] = lane;
-	}
-
-	public void ResetLane(int index)
-	{
-		SetLane(index, new Lane(LaneLength));
-	}
-}
-
-[System.Serializable]
-public struct Lane
-{
-	public int Length { get; private set; }
-
-	[SerializeField]
-	private bool[] steps;
-
-	public Lane(int length)
-	{
-		this.Length = length;
-		steps = new bool[length];
-		Clear();
-	}
-
-	public Lane(bool[] steps)
-	{
-		this.Length = steps.Length;
-		this.steps = steps;
-	}
-
-	public bool Get(int index)
-	{
-		return steps[index];
-	}
-
-	public void Set(int index, bool value)
-	{
-		steps[index] = value;
-	}
-
-	public void Clear()
-	{
-		for (int i = 0; i < Length; i++)
+		public Lane(int numSteps)
 		{
-			steps[i] = false;
+			steps = new bool[numSteps];
+		}
+
+		public int Length { get { return steps.Length; } }
+
+		public bool this[int i]
+		{
+			get { return steps[i]; }
+			set { steps[i] = value; }
 		}
 	}
 }

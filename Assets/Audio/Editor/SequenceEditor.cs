@@ -45,60 +45,58 @@ public class SequenceDrawer : PropertyDrawer
 		y += rowHeight + 5;
 	}
 
+	private SerializedProperty GetLanesProp()
+	{
+		return prop.FindPropertyRelative("lanes");
+	}
+
+	private SerializedProperty GetStepsProp(int laneIndex)
+	{
+		var lanes = GetLanesProp();
+		var lane = lanes.GetArrayElementAtIndex(laneIndex);
+		return lane.FindPropertyRelative("steps");
+	}
+
 	private void FindLength()
 	{
-		var lanes = prop.FindPropertyRelative("lanes");
-		if (lanes.arraySize == 0)
-		{
-			length = 4;
-			return;
-		}
-
-		var someLane = lanes.GetArrayElementAtIndex(0);
-		var someSteps = someLane.FindPropertyRelative("steps");
-		length = someSteps.arraySize;
+		length = 1;
+		var lanes = GetLanesProp();
+		if (lanes.arraySize == 0) return;
+		length = GetStepsProp(0).arraySize;
 		if (length == 0) length = 1;
 	}
 
-	private void InsertLane(int index = 0)
+	private void InsertLane()
 	{
 		var lanes = prop.FindPropertyRelative("lanes");
-		lanes.InsertArrayElementAtIndex(index);
+		lanes.InsertArrayElementAtIndex(lanes.arraySize);
 	}
 
 	private void RemoveLane()
 	{
-		var lanes = prop.FindPropertyRelative("lanes");
+		var lanes = GetLanesProp();
 		if (lanes.arraySize == 1) return;
 		lanes.DeleteArrayElementAtIndex(lanes.arraySize - 1);
 	}
 
 	private void AddLength()
 	{
-		var lanes = prop.FindPropertyRelative("lanes");
+		var lanes = GetLanesProp();
 		for (int i = 0; i < lanes.arraySize; i++)
 		{
-			var lane = lanes.GetArrayElementAtIndex(i);
-			var steps = lane.FindPropertyRelative("steps");
-
-			var insertIndex = steps.arraySize - 1;
-
-			steps.InsertArrayElementAtIndex(0);
+			var steps = GetStepsProp(i);
+			steps.InsertArrayElementAtIndex(steps.arraySize);
 		}
 	}
 
 	private void RemoveLength()
 	{
-		var lanes = prop.FindPropertyRelative("lanes");
+		var lanes = GetLanesProp();
 		for (int i = 0; i < lanes.arraySize; i++)
 		{
-			var lane = lanes.GetArrayElementAtIndex(i);
-			var steps = lane.FindPropertyRelative("steps");
-
+			var steps = GetStepsProp(i);
 			if (steps.arraySize == 1) continue;
-
-			var index = steps.arraySize - 1;
-			steps.DeleteArrayElementAtIndex(index);
+			steps.DeleteArrayElementAtIndex(steps.arraySize - 1);
 		}
 	}
 
@@ -108,7 +106,7 @@ public class SequenceDrawer : PropertyDrawer
 
 		FindLength();
 
-		var lanes = property.FindPropertyRelative("lanes");
+		var lanes = GetLanesProp();
 		if (lanes.arraySize == 0)
 		{
 			InsertLane();
@@ -123,7 +121,7 @@ public class SequenceDrawer : PropertyDrawer
 		}
 		if (GUI.Button(LayoutNextRect(25), "+"))
 		{
-			InsertLane(lanes.arraySize - 1);
+			InsertLane();
 		}
 
 		LayoutNextRect(25);
@@ -147,9 +145,10 @@ public class SequenceDrawer : PropertyDrawer
 
 	private void DrawLane(int index)
 	{
-		var lane = prop.FindPropertyRelative("lanes").GetArrayElementAtIndex(index);
-		var steps = lane.FindPropertyRelative("steps");
 		GUI.Label(LayoutNextRect(40), index.ToString());
+
+
+		var steps = GetStepsProp(index);
 		for (int i = 0; i < steps.arraySize; i++)
 		{
 			var step = steps.GetArrayElementAtIndex(i);
