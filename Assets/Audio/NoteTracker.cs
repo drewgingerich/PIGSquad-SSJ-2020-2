@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class NoteTracker : MonoBehaviour
@@ -7,8 +6,8 @@ public class NoteTracker : MonoBehaviour
 	[SerializeField]
 	private Metronome metronome;
 
-	private Dictionary<Note, double> nextNotes;
-	private Dictionary<Note, double> noteLengths;
+	private static Dictionary<Note, double> nextNotes;
+	private static Dictionary<Note, double> noteLengths;
 
 	private int tickCount;
 
@@ -48,7 +47,7 @@ public class NoteTracker : MonoBehaviour
 		nextNotes[Note.Thirtysecond] = nextTickTime;
 	}
 
-	public double GetNextNoteTime(Note note, int offset = 0)
+	public static double GetNextNoteTime(Note note, int offset = 0)
 	{
 		var time = nextNotes[note];
 		return time + noteLengths[note] * offset;
