@@ -1,35 +1,72 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+public enum Note
+{
+	Whole = 1,
+	Half = 2,
+	Quarter = 4,
+	Eighth = 8,
+	Sixteenth = 16,
+	Thirtysecond = 32,
+}
 public class NoteTracker : MonoBehaviour
 {
 	[SerializeField]
 	private Metronome metronome;
 
-	private static Dictionary<Note, double> nextNotes;
-	private static Dictionary<Note, double> noteLengths;
+	private static readonly Note[] notes = new Note[]
+	{
+		Note.Whole,
+		Note.Half,
+		Note.Quarter,
+		Note.Eighth,
+		Note.Sixteenth,
+		Note.Thirtysecond,
+	};
+	private static readonly Dictionary<Note, int> noteTickLengths = new Dictionary<Note, int>
+	{
+		{Note.Whole , 32},
+		{Note.Half , 16},
+		{Note.Quarter , 8},
+		{Note.Eighth , 4},
+		{Note.Sixteenth , 2},
+		{Note.Thirtysecond, 1}
+	};
+
+	private static Dictionary<Note, double> nextTimes;
+	private static Dictionary<Note, double> noteDurations;
 
 	private int tickCount;
 
 	private void Awake()
 	{
 		WaitForWarmup.OnWarmedUp += HandleWarmedUp;
+	}
 
-		noteLengths[Note.Whole] = metronome.TickLength * 32;
-		noteLengths[Note.Half] = metronome.TickLength * 16;
-		noteLengths[Note.Quarter] = metronome.TickLength * 8;
-		noteLengths[Note.Eighth] = metronome.TickLength * 4;
-		noteLengths[Note.Sixteenth] = metronome.TickLength * 2;
-		noteLengths[Note.Thirtysecond] = metronome.TickLength;
+	private void Initialize()
+	{
+		nextTimes = new Dictionary<Note, double>();
+		noteDurations = new Dictionary<Note, double>();
+
+		foreach (Note note in notes)
+		{
+			noteDurations[note] = metronome.TickLength * noteTickLengths[note];
+		}
 	}
 
 	private void HandleWarmedUp(double startTime)
 	{
-		tickCount = -1;
-
 		WaitForWarmup.OnWarmedUp -= HandleWarmedUp;
 
+		Initialize();
+		tickCount = -1;
+
 		metronome.OnTick += HandleTick;
+		foreach (Note note in notes)
+		{
+			Debug.Log(noteDurations[note]);
+		}
 	}
 
 	private void HandleTick()
@@ -39,18 +76,19 @@ public class NoteTracker : MonoBehaviour
 
 		var nextTickTime = metronome.NextTick;
 
-		if (tickCount % 32 == 0) nextNotes[Note.Whole] = nextTickTime;
-		if (tickCount % 16 == 0) nextNotes[Note.Half] = nextTickTime;
-		if (tickCount % 8 == 0) nextNotes[Note.Quarter] = nextTickTime;
-		if (tickCount % 4 == 0) nextNotes[Note.Eighth] = nextTickTime;
-		if (tickCount % 2 == 0) nextNotes[Note.Sixteenth] = nextTickTime;
-		nextNotes[Note.Thirtysecond] = nextTickTime;
+		foreach (Note note in notes)
+		{
+			if (tickCount % noteTickLengths[note] == 0)
+			{
+				nextTimes[note] = nextTickTime + noteDurations[note];
+			}
+		}
 	}
 
 	public static double GetNextNoteTime(Note note, int offset = 0)
 	{
-		var time = nextNotes[note];
-		return time + noteLengths[note] * offset;
+		var time = nextTimes[note];
+		return time + noteDurations[note] * offset;
 	}
 
 }
