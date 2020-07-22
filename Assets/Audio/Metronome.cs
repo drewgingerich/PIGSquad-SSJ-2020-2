@@ -12,14 +12,12 @@ public class Metronome : MonoBehaviour
 	const double ticksPerBeat = 8f;
 
 	public double TickLength { get; private set; }
-	public double LastTick { get; private set; }
 	public double NextTick { get; private set; }
 
 	void Awake()
 	{
-		LastTick = AudioSettings.dspTime;
 		TickLength = 1 / bpm * secPerMin / ticksPerBeat;
-		NextTick = LastTick + TickLength;
+		NextTick = AudioSettings.dspTime + TickLength;
 	}
 
 	void OnAudioFilterRead(float[] data, int channels)
@@ -27,7 +25,6 @@ public class Metronome : MonoBehaviour
 		double diff = (AudioSettings.dspTime - NextTick) % TickLength;
 		if (diff >= 0)
 		{
-			LastTick = NextTick;
 			NextTick = AudioSettings.dspTime - diff + TickLength;
 			OnTick?.Invoke();
 		}
