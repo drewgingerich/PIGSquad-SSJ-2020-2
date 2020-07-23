@@ -15,7 +15,7 @@ public class WaitForWarmup : MonoBehaviour
 	private IEnumerator Start()
 	{
 		yield return new WaitForSeconds(warmupTime);
-		var startTime = metronome.NextTick + metronome.TickLength * 3;
+		var startTime = metronome.NextTick;
 		OnWarmedUp?.Invoke(startTime);
 	}
 }
