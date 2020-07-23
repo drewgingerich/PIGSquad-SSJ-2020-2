@@ -16,15 +16,13 @@ public class PlayerController : MonoBehaviour
 
 	[Header("Refs")]
 	[SerializeField]
-	private NoteTracker noteTracker;
+	private AudioSource moveAudioSource;
 	[SerializeField]
-	private LineRenderer beam;
-	[SerializeField]
-	private MuteSourceDriver moveAudioSource;
-	[SerializeField]
-	private MuteSourceDriver dashAudioSource;
+	private AudioSource dashAudioSource;
 	[SerializeField]
 	private MuteSourceDriver shootAudioSource;
+	[SerializeField]
+	private GameObject beamControllerPrefab;
 
 	private StateMachine fsm = new StateMachine();
 
@@ -39,9 +37,6 @@ public class PlayerController : MonoBehaviour
 	private bool isShooting = false;
 	private float dashTimer;
 
-	private ContactFilter2D hitFilter = new ContactFilter2D();
-	private RaycastHit2D[] hitBuffer = new RaycastHit2D[1];
-
 	private const int STATE_IDLE = 0;
 	private const int STATE_MOVE = 1;
 	private const int STATE_DASH = 2;
@@ -53,8 +48,8 @@ public class PlayerController : MonoBehaviour
 	private void Awake()
 	{
 		fsm.AddState(STATE_IDLE, EnterIdleState, UpdateIdleState, null);
-		fsm.AddState(STATE_MOVE, EnterMoveState, UpdateMoveState, null);
-		fsm.AddState(STATE_DASH, EnterDashState, UpdateDashState, ExitDashState);
+		fsm.AddState(STATE_MOVE, EnterMoveState, UpdateMoveState, ExitMoveState);
+		fsm.AddState(STATE_DASH, EnterDashState, null, null);
 		fsm.AddState(STATE_SHOOT, EnterShootState, null, ExitShootState);
 	}
 
@@ -118,7 +113,7 @@ public class PlayerController : MonoBehaviour
 
 	private void EnterMoveState()
 	{
-		moveAudioSource.Play();
+		moveAudioSource.PlayScheduled(NoteTracker.GetNextNoteTime(Note.Eighth));
 	}
 
 	private void UpdateMoveState()
@@ -134,7 +129,7 @@ public class PlayerController : MonoBehaviour
 
 	private void ExitMoveState()
 	{
-		moveAudioSource.Stop();
+		moveAudioSource.SetScheduledEndTime(NoteTracker.GetNextNoteTime(Note.Eighth));
 	}
 
 	#endregion
@@ -143,25 +138,37 @@ public class PlayerController : MonoBehaviour
 
 	private void EnterDashState()
 	{
-		dashAudioSource.Play();
 		dashInput = false;
 		isDashing = true;
-		dashTimer = 0f;
+		StartCoroutine(Dash());
 	}
 
-	private void UpdateDashState()
+	private IEnumerator Dash()
 	{
 		Vector2 direction = velocity.normalized;
-		dashTimer += Time.deltaTime;
-		if (dashTimer >= dashDuration) fsm.ChangeToState(STATE_IDLE);
-
-		transform.Translate(direction * dashSpeed * Time.deltaTime);
+		dashAudioSource.PlayScheduled(NoteTracker.GetNextNoteTime(Note.Thirtysecond));
+		// yield return new WaitForNote(Note.Eighth);
+		float timer = 0f;
+		float target = (float)NoteTracker.noteDurations[Note.Eighth];
+		while (true)
+		{
+			timer += Time.deltaTime;
+			Debug.Log(timer);
+			Debug.Log(target);
+			if (timer >= target) break;
+			else
+			{
+				transform.Translate(direction * dashSpeed * Time.deltaTime);
+			}
+			yield return null;
+		}
+		fsm.ChangeToState(STATE_IDLE);
+		isDashing = false;
+		dashAudioSource.Stop();
 	}
 
 	private void ExitDashState()
 	{
-		isDashing = false;
-		dashAudioSource.Stop();
 	}
 
 	#endregion
@@ -172,29 +179,11 @@ public class PlayerController : MonoBehaviour
 	{
 		shootInput = false;
 		isShooting = true;
-		StartCoroutine(
-			Shoot(() => fsm.ChangeToState(STATE_MOVE))
-		);
-	}
-
-	private IEnumerator Shoot(Action onEnd)
-	{
+		var go = Instantiate(beamControllerPrefab, transform.position, Quaternion.identity);
+		var beamController = go.GetComponent<BeamController>();
 		Vector2 direction = (aimInput - (Vector2)transform.position).normalized;
-		var hits = Physics2D.Raycast(transform.position, direction, hitFilter, hitBuffer);
-		var endPoint = hits > 0
-			? (Vector3)hitBuffer[0].point
-			: transform.position + (Vector3)direction * 100;
-		var beamPositions = new Vector3[]{
-				transform.position,
-				endPoint
-			};
-		beam.SetPositions(beamPositions);
-		beam.enabled = true;
-		shootAudioSource.Play();
-		yield return new WaitForSeconds(0.25f);
-		beam.enabled = false;
-
-		onEnd?.Invoke();
+		beamController.Fire(direction);
+		fsm.ChangeToState(STATE_MOVE);
 	}
 
 	private void ExitShootState()
