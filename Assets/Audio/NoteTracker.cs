@@ -35,16 +35,16 @@ public class NoteTracker : MonoBehaviour
 	};
 
 	private static Dictionary<Note, double> nextTimes;
-	private static Dictionary<Note, double> noteDurations;
+	public static Dictionary<Note, double> noteDurations;
 
-	private int tickCount;
+	private int tickCount = 0;
 
 	private void Awake()
 	{
 		WaitForWarmup.OnWarmedUp += HandleWarmedUp;
 	}
 
-	private void Initialize()
+	private void Initialize(double startTime)
 	{
 		nextTimes = new Dictionary<Note, double>();
 		noteDurations = new Dictionary<Note, double>();
@@ -53,20 +53,20 @@ public class NoteTracker : MonoBehaviour
 		{
 			noteDurations[note] = metronome.TickLength * noteTickLengths[note];
 		}
+
+		foreach (Note note in notes)
+		{
+			nextTimes[note] = startTime;
+		}
 	}
 
 	private void HandleWarmedUp(double startTime)
 	{
 		WaitForWarmup.OnWarmedUp -= HandleWarmedUp;
 
-		Initialize();
-		tickCount = -1;
+		Initialize(startTime);
 
 		metronome.OnTick += HandleTick;
-		foreach (Note note in notes)
-		{
-			Debug.Log(noteDurations[note]);
-		}
 	}
 
 	private void HandleTick()
