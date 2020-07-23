@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,16 +12,20 @@ public class PlayerController : MonoBehaviour
 	private float mass = 5f;
 	[SerializeField]
 	private float dashSpeed = 2f;
-	[SerializeField]
-	private float dashDuration = 2f;
 
 	[Header("Refs")]
+	[SerializeField]
+	private AudioMixerSnapshot mainSnapshot;
+	[SerializeField]
+	private AudioMixerSnapshot reloadSnapshot;
 	[SerializeField]
 	private AudioSource moveAudioSource;
 	[SerializeField]
 	private AudioSource dashAudioSource;
 	[SerializeField]
 	private MuteSourceDriver shootAudioSource;
+	[SerializeField]
+	private AudioSource reloadAudioSource;
 	[SerializeField]
 	private GameObject beamControllerPrefab;
 
@@ -32,9 +37,11 @@ public class PlayerController : MonoBehaviour
 	private Vector2 aimInput;
 	private bool dashInput = false;
 	private bool shootInput = false;
+	private bool reloadInput = false;
 
 	private bool isDashing = false;
 	private bool isShooting = false;
+	private bool isReloading = false;
 	private float dashTimer;
 
 	private const int STATE_IDLE = 0;
@@ -49,8 +56,9 @@ public class PlayerController : MonoBehaviour
 	{
 		fsm.AddState(STATE_IDLE, EnterIdleState, UpdateIdleState, null);
 		fsm.AddState(STATE_MOVE, EnterMoveState, UpdateMoveState, ExitMoveState);
-		fsm.AddState(STATE_DASH, EnterDashState, null, null);
+		fsm.AddState(STATE_DASH, EnterDashState, null, ExitDashState);
 		fsm.AddState(STATE_SHOOT, EnterShootState, null, ExitShootState);
+		fsm.AddState(STATE_RELOAD, EnterReloadState, null, ExitReloadState);
 	}
 
 	private void OnEnable()
@@ -73,6 +81,7 @@ public class PlayerController : MonoBehaviour
 			aimInput = Camera.main.ScreenToWorldPoint(screenPoint);
 		};
 		controls.Player.Shoot.performed += ctx => shootInput = true;
+		controls.Player.Reload.performed += ctx => reloadInput = true;
 	}
 
 	private void OnDisable()
@@ -82,13 +91,17 @@ public class PlayerController : MonoBehaviour
 
 	private void Update()
 	{
-		if (shootInput && !isShooting)
-		{
-			fsm.ChangeToState(STATE_SHOOT);
-		}
-		else if (dashInput && !isDashing)
+		if (dashInput && !isDashing && !isReloading)
 		{
 			fsm.ChangeToState(STATE_DASH);
+		}
+		else if (reloadInput && !isReloading)
+		{
+			fsm.ChangeToState(STATE_RELOAD);
+		}
+		else if (shootInput && !isShooting)
+		{
+			fsm.ChangeToState(STATE_SHOOT);
 		}
 		fsm.Update();
 	}
@@ -147,14 +160,12 @@ public class PlayerController : MonoBehaviour
 	{
 		Vector2 direction = velocity.normalized;
 		dashAudioSource.PlayScheduled(NoteTracker.GetNextNoteTime(Note.Thirtysecond));
-		// yield return new WaitForNote(Note.Eighth);
 		float timer = 0f;
-		float target = (float)NoteTracker.noteDurations[Note.Eighth];
+		float target = (float)NoteTracker.noteDurations[Note.Sixteenth];
 		while (true)
 		{
+			Debug.Log(timer - target);
 			timer += Time.deltaTime;
-			Debug.Log(timer);
-			Debug.Log(target);
 			if (timer >= target) break;
 			else
 			{
@@ -162,13 +173,13 @@ public class PlayerController : MonoBehaviour
 			}
 			yield return null;
 		}
-		fsm.ChangeToState(STATE_IDLE);
-		isDashing = false;
-		dashAudioSource.Stop();
+		dashAudioSource.SetScheduledEndTime(NoteTracker.GetNextNoteTime(Note.Thirtysecond));
+		fsm.ChangeToState(STATE_MOVE);
 	}
 
 	private void ExitDashState()
 	{
+		isDashing = false;
 	}
 
 	#endregion
@@ -189,6 +200,40 @@ public class PlayerController : MonoBehaviour
 	private void ExitShootState()
 	{
 		isShooting = false;
+	}
+
+	#endregion
+
+	#region STATE_RELOAD
+
+	private void EnterReloadState()
+	{
+		reloadInput = false;
+		isReloading = true;
+		StartCoroutine(Reload());
+	}
+
+	private IEnumerator Reload()
+	{
+		yield return new WaitForNote(Note.Half);
+		reloadSnapshot.TransitionTo((float)NoteTracker.noteDurations[Note.Sixteenth]);
+		reloadAudioSource.PlayScheduled(NoteTracker.GetNextNoteTime(Note.Eighth));
+		yield return new WaitForNote(Note.Half);
+		yield return new WaitForNote(Note.Quarter);
+		yield return new WaitForNote(Note.Eighth);
+		// yield return new WaitForSeconds((float)NoteTracker.noteDurations[Note.Whole]);
+
+
+
+		mainSnapshot.TransitionTo((float)NoteTracker.noteDurations[Note.Sixteenth]);
+		// yield return new WaitForNote(Note.Eighth);
+
+		fsm.ChangeToState(STATE_MOVE);
+	}
+
+	private void ExitReloadState()
+	{
+		isReloading = false;
 	}
 
 	#endregion
