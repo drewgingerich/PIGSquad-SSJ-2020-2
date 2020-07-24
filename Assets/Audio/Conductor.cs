@@ -25,7 +25,7 @@ public class Conductor : MonoBehaviour
 	private static Dictionary<Note, double> nextTimes;
 	public static Dictionary<Note, double> noteDurations;
 
-	private int tickCount = 0;
+	public static int tickCount { get; private set; }
 
 	private void Awake()
 	{
@@ -43,6 +43,8 @@ public class Conductor : MonoBehaviour
 
 	private void Initialize(double startTime)
 	{
+		tickCount = 0;
+
 		nextTimes = new Dictionary<Note, double>();
 		noteDurations = new Dictionary<Note, double>();
 
@@ -53,22 +55,25 @@ public class Conductor : MonoBehaviour
 
 		foreach (Note note in notes)
 		{
-			nextTimes[note] = startTime;
+			nextTimes[note] = startTime + noteDurations[note];
 		}
 	}
 
 	private void HandleTick(int count)
 	{
-		tickCount += count;
-		tickCount %= 32;
-
-		var nextTickTime = Metronome.NextTick;
-
-		foreach (Note note in notes)
+		for (int i = count; i > 0; i--)
 		{
-			if (tickCount % (int)note == 0)
+			tickCount++;
+			tickCount %= 32;
+
+			var lastTick = Metronome.NextTick - Metronome.TickLength * i;
+
+			foreach (Note note in notes)
 			{
-				nextTimes[note] = nextTickTime + noteDurations[note];
+				if (tickCount % (int)note == 0)
+				{
+					nextTimes[note] = lastTick + noteDurations[note];
+				}
 			}
 		}
 	}
@@ -76,7 +81,6 @@ public class Conductor : MonoBehaviour
 	public static double GetNextNote(Note note, int offset = 0)
 	{
 		var time = nextTimes[note];
-		// Debug.Log(time);
 		return time + noteDurations[note] * offset;
 	}
 }
