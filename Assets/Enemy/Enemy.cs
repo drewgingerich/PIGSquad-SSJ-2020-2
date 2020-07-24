@@ -8,8 +8,6 @@ public class Enemy : MonoBehaviour
 	[SerializeField]
 	private float speed = 3;
 
-	private bool rush = true;
-
 	public void Activate()
 	{
 		StartCoroutine(MoveLoop());
@@ -17,33 +15,55 @@ public class Enemy : MonoBehaviour
 
 	private IEnumerator MoveLoop()
 	{
-		yield return new WaitForNote(Note.Quarter);
 		while (true)
 		{
-			yield return StartCoroutine(Move());
-			// yield return new WaitForNote(Note.Quarter, 1);
-			Debug.Log(Conductor.GetNextNote(Note.Quarter));
-			Debug.Log(Conductor.GetNextNote(Note.Quarter, 1));
-			// yield return new WaitForNote(Note.Quarter, 1);
-			yield return new WaitForSeconds(1);
-			rush = !rush;
+			yield return StartCoroutine(Rush());
+			yield return StartCoroutine(Flank());
 		}
 
 	}
 
-	private IEnumerator Move()
+	public void Tag()
+	{
+		StopAllCoroutines();
+	}
+
+	public IEnumerator Quake()
+	{
+		float timer = 0;
+		while (true)
+		{
+			var x = 0.1f * Mathf.Sin(timer * 5.2f);
+			var y = 0.1f * Mathf.Sin(timer * 5.5f);
+			Vector2 shift = new Vector2(x, y);
+			transform.Translate(shift);
+		}
+	}
+
+	private IEnumerator Rush()
 	{
 		var diff = (Vector2)(PlayerController.playerTransform.position - transform.position);
-		var direction = diff.normalized;
+		var rotation = Random.Range(-10, 10);
+		var direction = Quaternion.AngleAxis(rotation, Vector3.back) * diff.normalized;
+		var targetTime = Conductor.GetNextNote(Note.Quarter);
+		yield return StartCoroutine(Move(direction, speed * 1.5f, targetTime));
 
-		var timer = 0f;
-		var targetTime = Conductor.noteDurations[Note.Quarter];
+	}
 
-		while (timer < targetTime)
+	private IEnumerator Flank()
+	{
+		var diff = (Vector2)(PlayerController.playerTransform.position - transform.position);
+		var rotation = Random.Range(80, 120);
+		var direction = Quaternion.AngleAxis(rotation, Vector3.back) * diff.normalized;
+		var targetTime = Conductor.GetNextNote(Note.Quarter);
+		yield return StartCoroutine(Move(direction, speed, targetTime));
+
+	}
+
+	private IEnumerator Move(Vector2 direction, float speed, double targetTime)
+	{
+		while (AudioSettings.dspTime < targetTime)
 		{
-			var rotation = rush ? Random.Range(-10, 10) : Random.Range(80, 120);
-
-			timer += Time.deltaTime;
 			transform.Translate(direction * speed * Time.deltaTime);
 			yield return null;
 		}
