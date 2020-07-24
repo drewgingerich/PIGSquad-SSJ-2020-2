@@ -3,12 +3,12 @@ using UnityEngine;
 
 public enum Note
 {
-	Whole = 1,
-	Half = 2,
-	Quarter = 4,
-	Eighth = 8,
-	Sixteenth = 16,
-	Thirtysecond = 32,
+	Whole = 32,
+	Half = 16,
+	Quarter = 8,
+	Eighth = 4,
+	Sixteenth = 2,
+	Thirtysecond = 1,
 }
 public class NoteTracker : MonoBehaviour
 {
