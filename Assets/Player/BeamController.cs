@@ -25,6 +25,13 @@ public class BeamController : MonoBehaviour
 	private IEnumerator Activate()
 	{
 		var hits = Physics2D.Raycast(transform.position, direction, hitFilter, hitBuffer);
+
+		if (hits > 0)
+		{
+			var hitDetector = hitBuffer[0].collider.gameObject.GetComponent<HitDetector>();
+			if (hitDetector != null) hitDetector.Hit(Hit.Tag, direction);
+		}
+
 		var endPoint = hits > 0
 			? (Vector3)hitBuffer[0].point
 			: transform.position + (Vector3)direction * 100;
@@ -43,6 +50,13 @@ public class BeamController : MonoBehaviour
 		beam.startWidth = beam.endWidth = 0.15f;
 		yield return new WaitForSeconds(0.1f);
 		beam.enabled = false;
+
+		if (hits > 0)
+		{
+			var hitDetector = hitBuffer[0].collider.gameObject.GetComponent<HitDetector>();
+			if (hitDetector != null) hitDetector.Hit(Hit.Shot, direction);
+		}
+
 		GameObject.Destroy(gameObject);
 	}
 

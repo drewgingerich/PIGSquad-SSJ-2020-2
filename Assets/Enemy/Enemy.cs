@@ -8,9 +8,29 @@ public class Enemy : MonoBehaviour
 	[SerializeField]
 	private float speed = 3;
 
+	[SerializeField]
+	private GameObject bloodPrefab;
+	[SerializeField]
+	private HitDetector hitDetector;
+
 	public void Activate()
 	{
+		hitDetector.OnHit += HandleHit;
 		StartCoroutine(MoveLoop());
+	}
+
+	private void HandleHit(Hit type, Vector2 direction)
+	{
+		switch (type)
+		{
+			case Hit.Tag:
+				Tag();
+				break;
+			case Hit.Shot:
+				Shot(direction);
+				break;
+		}
+
 	}
 
 	private IEnumerator MoveLoop()
@@ -20,23 +40,40 @@ public class Enemy : MonoBehaviour
 			yield return StartCoroutine(Rush());
 			yield return StartCoroutine(Flank());
 		}
-
 	}
 
 	public void Tag()
 	{
 		StopAllCoroutines();
+		StartCoroutine(Quake());
+	}
+
+	public void Shot(Vector2 direction)
+	{
+		StopAllCoroutines();
+
+		var bloodObject = Instantiate(bloodPrefab, transform.position, Quaternion.identity);
+		var bloodSpurt = bloodObject.GetComponent<BloodSpurt>();
+		bloodSpurt.Activate(direction);
+
+		StartCoroutine(Die());
 	}
 
 	public IEnumerator Quake()
 	{
+		var amplitude = 0.03f;
+		var someFrequencyOne = 61f;
+		var someFrequencyTwo = 59f;
+
 		float timer = 0;
 		while (true)
 		{
-			var x = 0.1f * Mathf.Sin(timer * 5.2f);
-			var y = 0.1f * Mathf.Sin(timer * 5.5f);
+			var x = amplitude * Mathf.Sin(timer * someFrequencyOne);
+			var y = amplitude * Mathf.Sin(timer * someFrequencyTwo);
 			Vector2 shift = new Vector2(x, y);
 			transform.Translate(shift);
+			timer += Time.deltaTime;
+			yield return null;
 		}
 	}
 
@@ -67,5 +104,12 @@ public class Enemy : MonoBehaviour
 			transform.Translate(direction * speed * Time.deltaTime);
 			yield return null;
 		}
+	}
+
+	private IEnumerator Die()
+	{
+		yield return new WaitForNote(Note.Eighth);
+		hitDetector.OnHit -= HandleHit;
+		Destroy(gameObject);
 	}
 }
