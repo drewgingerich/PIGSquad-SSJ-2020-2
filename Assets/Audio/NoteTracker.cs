@@ -41,7 +41,7 @@ public class NoteTracker : MonoBehaviour
 
 	private void Awake()
 	{
-		WaitForWarmup.OnWarmedUp += HandleWarmedUp;
+		MusicStartAnnouncer.OnStart += HandleWarmedUp;
 	}
 
 	private void Initialize(double startTime)
@@ -62,7 +62,7 @@ public class NoteTracker : MonoBehaviour
 
 	private void HandleWarmedUp(double startTime)
 	{
-		WaitForWarmup.OnWarmedUp -= HandleWarmedUp;
+		MusicStartAnnouncer.OnStart -= HandleWarmedUp;
 
 		Initialize(startTime);
 

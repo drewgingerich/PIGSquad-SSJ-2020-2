@@ -8,12 +8,12 @@ public class PlayOnWarmup : MonoBehaviour
 	private void Start()
 	{
 		src = GetComponent<AudioSource>();
-		WaitForWarmup.OnWarmedUp += StartAudio;
+		MusicStartAnnouncer.OnStart += StartAudio;
 	}
 
 	private void StartAudio(double startTime)
 	{
 		src.PlayScheduled(startTime);
-		WaitForWarmup.OnWarmedUp -= StartAudio;
+		MusicStartAnnouncer.OnStart -= StartAudio;
 	}
 }

@@ -2,20 +2,19 @@
 using System.Collections;
 using UnityEngine;
 
-public class WaitForWarmup : MonoBehaviour
+public class MusicStartAnnouncer : MonoBehaviour
 {
 
-	public static event Action<double> OnWarmedUp;
+	public static event Action<double> OnStart;
 
-	public float warmupTime = 1f;
+	public float warmupTime = 0.25f;
 
 	public Metronome metronome;
 
-	// Start is called before the first frame update
 	private IEnumerator Start()
 	{
 		yield return new WaitForSeconds(warmupTime);
 		var startTime = metronome.NextTick;
-		OnWarmedUp?.Invoke(startTime);
+		OnStart?.Invoke(startTime);
 	}
 }
