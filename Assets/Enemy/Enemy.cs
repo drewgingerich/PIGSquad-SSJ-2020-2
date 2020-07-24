@@ -8,7 +8,7 @@ public class Enemy : MonoBehaviour
 	[SerializeField]
 	float speed = 3;
 
-	void Start()
+	public void Activate()
 	{
 		StartCoroutine(MoveLoop());
 	}
