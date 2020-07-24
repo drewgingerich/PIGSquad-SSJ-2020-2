@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour
 	[SerializeField]
 	private AudioSource dashAudioSource;
 	[SerializeField]
-	private MuteSourceDriver shootAudioSource;
+	private AudioSource shootAudioSource;
 	[SerializeField]
 	private AudioSource reloadAudioSource;
 	[SerializeField]
@@ -193,7 +193,7 @@ public class PlayerController : MonoBehaviour
 		var go = Instantiate(beamControllerPrefab, transform.position, Quaternion.identity);
 		var beamController = go.GetComponent<BeamController>();
 		Vector2 direction = (aimInput - (Vector2)transform.position).normalized;
-		beamController.Fire(direction);
+		beamController.Fire(direction, shootAudioSource);
 		fsm.ChangeToState(STATE_MOVE);
 	}
 
