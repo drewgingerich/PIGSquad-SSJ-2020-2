@@ -704,6 +704,9 @@ MonoBehaviour:
   tickLag: 2
   metronome: {fileID: 161283721}
   sequencer: {fileID: 1030362339}
+  tickCount: 0
+  playahead: 4
+  playNext: 1
 --- !u!114 &1030362339
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1121,6 +1124,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   voices: 32
+  srcs: []
+  srcIndex: 0
 --- !u!4 &2019963057
 Transform:
   m_ObjectHideFlags: 0
@@ -1400,6 +1405,9 @@ MonoBehaviour:
   tickLag: 2
   metronome: {fileID: 161283721}
   sequencer: {fileID: 2096773251}
+  tickCount: 0
+  playahead: 4
+  playNext: 1
 --- !u!114 &2096773251
 MonoBehaviour:
   m_ObjectHideFlags: 0

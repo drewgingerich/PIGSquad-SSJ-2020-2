@@ -14,6 +14,6 @@ public class WaitForNote : CustomYieldInstruction
 
 	public WaitForNote(Note noteType, int offset = 0)
 	{
-		targetTime = NoteTracker.GetNextNote(noteType, offset);
+		targetTime = Conductor.GetNextNote(noteType, offset);
 	}
 }

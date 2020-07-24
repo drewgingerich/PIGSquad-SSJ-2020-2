@@ -134,7 +134,7 @@ public class PlayerController : MonoBehaviour
 
 	private void EnterMoveState()
 	{
-		moveAudioSource.PlayScheduled(NoteTracker.GetNextNote(Note.Eighth));
+		moveAudioSource.PlayScheduled(Conductor.GetNextNote(Note.Eighth));
 	}
 
 	private void UpdateMoveState()
@@ -150,7 +150,7 @@ public class PlayerController : MonoBehaviour
 
 	private void ExitMoveState()
 	{
-		moveAudioSource.SetScheduledEndTime(NoteTracker.GetNextNote(Note.Eighth));
+		moveAudioSource.SetScheduledEndTime(Conductor.GetNextNote(Note.Eighth));
 	}
 
 	#endregion
@@ -167,12 +167,12 @@ public class PlayerController : MonoBehaviour
 	private IEnumerator Dash()
 	{
 		Vector2 direction = velocity.normalized;
-		var dashTime = (float)NoteTracker.noteDurations[Note.Sixteenth];
+		var dashTime = (float)Conductor.noteDurations[Note.Sixteenth];
 		var distance = dashTime * dashSpeed;
 
 		dashController.Activate(direction, distance);
 
-		var nextThirtysecond = NoteTracker.GetNextNote(Note.Thirtysecond);
+		var nextThirtysecond = Conductor.GetNextNote(Note.Thirtysecond);
 		dashAudioSource.PlayScheduled(nextThirtysecond);
 
 		float timer = 0f;
@@ -183,7 +183,7 @@ public class PlayerController : MonoBehaviour
 			yield return null;
 		}
 
-		nextThirtysecond = NoteTracker.GetNextNote(Note.Thirtysecond);
+		nextThirtysecond = Conductor.GetNextNote(Note.Thirtysecond);
 		dashAudioSource.SetScheduledEndTime(nextThirtysecond);
 
 		fsm.ChangeToState(STATE_MOVE);
@@ -228,8 +228,8 @@ public class PlayerController : MonoBehaviour
 	private IEnumerator Reload()
 	{
 		yield return new WaitForNote(Note.Half);
-		reloadSnapshot.TransitionTo((float)NoteTracker.noteDurations[Note.Sixteenth]);
-		reloadAudioSource.PlayScheduled(NoteTracker.GetNextNote(Note.Eighth));
+		reloadSnapshot.TransitionTo((float)Conductor.noteDurations[Note.Sixteenth]);
+		reloadAudioSource.PlayScheduled(Conductor.GetNextNote(Note.Eighth));
 		yield return new WaitForNote(Note.Half);
 		yield return new WaitForNote(Note.Quarter);
 		yield return new WaitForNote(Note.Eighth);
@@ -237,7 +237,7 @@ public class PlayerController : MonoBehaviour
 
 
 
-		mainSnapshot.TransitionTo((float)NoteTracker.noteDurations[Note.Sixteenth]);
+		mainSnapshot.TransitionTo((float)Conductor.noteDurations[Note.Sixteenth]);
 		// yield return new WaitForNote(Note.Eighth);
 
 		fsm.ChangeToState(STATE_MOVE);

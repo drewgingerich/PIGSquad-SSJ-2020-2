@@ -10,7 +10,7 @@ public enum Note
 	Sixteenth = 2,
 	Thirtysecond = 1,
 }
-public class NoteTracker : MonoBehaviour
+public class Conductor : MonoBehaviour
 {
 	private static readonly Note[] notes = new Note[]
 	{

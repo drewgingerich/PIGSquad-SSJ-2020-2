@@ -22,8 +22,8 @@ public class Enemy : MonoBehaviour
 		{
 			yield return StartCoroutine(Move());
 			// yield return new WaitForNote(Note.Quarter, 1);
-			Debug.Log(NoteTracker.GetNextNote(Note.Quarter));
-			Debug.Log(NoteTracker.GetNextNote(Note.Quarter, 1));
+			Debug.Log(Conductor.GetNextNote(Note.Quarter));
+			Debug.Log(Conductor.GetNextNote(Note.Quarter, 1));
 			// yield return new WaitForNote(Note.Quarter, 1);
 			yield return new WaitForSeconds(1);
 			rush = !rush;
@@ -37,7 +37,7 @@ public class Enemy : MonoBehaviour
 		var direction = diff.normalized;
 
 		var timer = 0f;
-		var targetTime = NoteTracker.noteDurations[Note.Quarter];
+		var targetTime = Conductor.noteDurations[Note.Quarter];
 
 		while (timer < targetTime)
 		{
