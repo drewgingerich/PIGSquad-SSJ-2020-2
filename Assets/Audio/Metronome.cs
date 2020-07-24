@@ -22,11 +22,12 @@ public class Metronome : MonoBehaviour
 
 	void OnAudioFilterRead(float[] data, int channels)
 	{
-		double diff = (AudioSettings.dspTime - NextTick) % TickLength;
-		if (diff >= 0)
+		double diff = (AudioSettings.dspTime - NextTick);
+		while (diff > TickLength)
 		{
-			NextTick = AudioSettings.dspTime - diff + TickLength;
+			diff -= TickLength;
 			OnTick?.Invoke();
 		}
+		NextTick = AudioSettings.dspTime - diff + TickLength;
 	}
 }
