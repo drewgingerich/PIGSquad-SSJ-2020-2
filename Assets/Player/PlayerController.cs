@@ -5,6 +5,8 @@ using UnityEngine.Audio;
 
 public class PlayerController : MonoBehaviour
 {
+	public static Transform playerTransform;
+
 	[Header("Tweaks")]
 	[SerializeField]
 	private float speed = 2f;
@@ -58,6 +60,8 @@ public class PlayerController : MonoBehaviour
 
 	private void Awake()
 	{
+		playerTransform = transform;
+
 		fsm.AddState(STATE_IDLE, EnterIdleState, UpdateIdleState, null);
 		fsm.AddState(STATE_MOVE, EnterMoveState, UpdateMoveState, ExitMoveState);
 		fsm.AddState(STATE_DASH, EnterDashState, null, ExitDashState);
