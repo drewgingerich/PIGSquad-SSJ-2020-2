@@ -27,8 +27,8 @@ public class Metronome : MonoBehaviour
 		if (tickCount > 0)
 		{
 			var remainder = diff % TickLength;
-			OnTick?.Invoke(tickCount);
 			NextTick = AudioSettings.dspTime - remainder + TickLength;
+			OnTick?.Invoke(tickCount);
 		}
 	}
 }
