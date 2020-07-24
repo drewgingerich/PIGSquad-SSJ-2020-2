@@ -12,9 +12,6 @@ public enum Note
 }
 public class NoteTracker : MonoBehaviour
 {
-	[SerializeField]
-	private Metronome metronome;
-
 	private static readonly Note[] notes = new Note[]
 	{
 		Note.Whole,
@@ -51,7 +48,7 @@ public class NoteTracker : MonoBehaviour
 
 		foreach (Note note in notes)
 		{
-			noteDurations[note] = metronome.TickLength * noteTickLengths[note];
+			noteDurations[note] = Metronome.TickLength * noteTickLengths[note];
 		}
 
 		foreach (Note note in notes)
@@ -66,7 +63,7 @@ public class NoteTracker : MonoBehaviour
 
 		Initialize(startTime);
 
-		metronome.OnTick += HandleTick;
+		Metronome.OnTick += HandleTick;
 	}
 
 	private void HandleTick()
@@ -74,7 +71,7 @@ public class NoteTracker : MonoBehaviour
 		tickCount++;
 		tickCount %= 32;
 
-		var nextTickTime = metronome.NextTick;
+		var nextTickTime = Metronome.NextTick;
 
 		foreach (Note note in notes)
 		{
@@ -85,10 +82,10 @@ public class NoteTracker : MonoBehaviour
 		}
 	}
 
-	public static double GetNextNoteTime(Note note, int offset = 0)
+	public static double GetNextNote(Note note, int offset = 0)
 	{
 		var time = nextTimes[note];
+		Debug.Log(time);
 		return time + noteDurations[note] * offset;
 	}
-
 }

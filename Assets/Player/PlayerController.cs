@@ -134,7 +134,7 @@ public class PlayerController : MonoBehaviour
 
 	private void EnterMoveState()
 	{
-		moveAudioSource.PlayScheduled(NoteTracker.GetNextNoteTime(Note.Eighth));
+		moveAudioSource.PlayScheduled(NoteTracker.GetNextNote(Note.Eighth));
 	}
 
 	private void UpdateMoveState()
@@ -150,7 +150,7 @@ public class PlayerController : MonoBehaviour
 
 	private void ExitMoveState()
 	{
-		moveAudioSource.SetScheduledEndTime(NoteTracker.GetNextNoteTime(Note.Eighth));
+		moveAudioSource.SetScheduledEndTime(NoteTracker.GetNextNote(Note.Eighth));
 	}
 
 	#endregion
@@ -172,7 +172,7 @@ public class PlayerController : MonoBehaviour
 
 		dashController.Activate(direction, distance);
 
-		var nextThirtysecond = NoteTracker.GetNextNoteTime(Note.Thirtysecond);
+		var nextThirtysecond = NoteTracker.GetNextNote(Note.Thirtysecond);
 		dashAudioSource.PlayScheduled(nextThirtysecond);
 
 		float timer = 0f;
@@ -183,7 +183,7 @@ public class PlayerController : MonoBehaviour
 			yield return null;
 		}
 
-		nextThirtysecond = NoteTracker.GetNextNoteTime(Note.Thirtysecond);
+		nextThirtysecond = NoteTracker.GetNextNote(Note.Thirtysecond);
 		dashAudioSource.SetScheduledEndTime(nextThirtysecond);
 
 		fsm.ChangeToState(STATE_MOVE);
@@ -229,7 +229,7 @@ public class PlayerController : MonoBehaviour
 	{
 		yield return new WaitForNote(Note.Half);
 		reloadSnapshot.TransitionTo((float)NoteTracker.noteDurations[Note.Sixteenth]);
-		reloadAudioSource.PlayScheduled(NoteTracker.GetNextNoteTime(Note.Eighth));
+		reloadAudioSource.PlayScheduled(NoteTracker.GetNextNote(Note.Eighth));
 		yield return new WaitForNote(Note.Half);
 		yield return new WaitForNote(Note.Quarter);
 		yield return new WaitForNote(Note.Eighth);

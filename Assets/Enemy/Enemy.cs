@@ -6,7 +6,9 @@ public class Enemy : MonoBehaviour
 {
 
 	[SerializeField]
-	float speed = 3;
+	private float speed = 3;
+
+	private bool rush = true;
 
 	public void Activate()
 	{
@@ -19,7 +21,12 @@ public class Enemy : MonoBehaviour
 		while (true)
 		{
 			yield return StartCoroutine(Move());
-			yield return new WaitForNote(Note.Quarter);
+			// yield return new WaitForNote(Note.Quarter, 1);
+			Debug.Log(NoteTracker.GetNextNote(Note.Quarter));
+			Debug.Log(NoteTracker.GetNextNote(Note.Quarter, 1));
+			// yield return new WaitForNote(Note.Quarter, 1);
+			yield return new WaitForSeconds(1);
+			rush = !rush;
 		}
 
 	}
@@ -34,6 +41,8 @@ public class Enemy : MonoBehaviour
 
 		while (timer < targetTime)
 		{
+			var rotation = rush ? Random.Range(-10, 10) : Random.Range(80, 120);
+
 			timer += Time.deltaTime;
 			transform.Translate(direction * speed * Time.deltaTime);
 			yield return null;
