@@ -23,7 +23,7 @@ public class Metronome : MonoBehaviour
 	void OnAudioFilterRead(float[] data, int channels)
 	{
 		double diff = (AudioSettings.dspTime - NextTick);
-		var tickCount = Mathf.FloorToInt((float)(diff / TickLength));
+		var tickCount = (int)(diff / TickLength);
 		if (tickCount > 0)
 		{
 			var remainder = diff % TickLength;
