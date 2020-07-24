@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class Metronome : MonoBehaviour
 {
-	public static event Action OnTick;
+	public static event Action<int> OnTick;
 
 	public double bpm = 120f;
 
@@ -23,11 +23,12 @@ public class Metronome : MonoBehaviour
 	void OnAudioFilterRead(float[] data, int channels)
 	{
 		double diff = (AudioSettings.dspTime - NextTick);
-		while (diff > TickLength)
+		var tickCount = Mathf.FloorToInt((float)(diff / TickLength));
+		if (tickCount > 0)
 		{
-			diff -= TickLength;
-			OnTick?.Invoke();
+			var remainder = diff % TickLength;
+			OnTick?.Invoke(tickCount);
+			NextTick = AudioSettings.dspTime - remainder + TickLength;
 		}
-		NextTick = AudioSettings.dspTime - diff + TickLength;
 	}
 }

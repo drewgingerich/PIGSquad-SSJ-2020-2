@@ -21,15 +21,6 @@ public class Conductor : MonoBehaviour
 		Note.Sixteenth,
 		Note.Thirtysecond,
 	};
-	private static readonly Dictionary<Note, int> noteTickLengths = new Dictionary<Note, int>
-	{
-		{Note.Whole , 32},
-		{Note.Half , 16},
-		{Note.Quarter , 8},
-		{Note.Eighth , 4},
-		{Note.Sixteenth , 2},
-		{Note.Thirtysecond, 1}
-	};
 
 	private static Dictionary<Note, double> nextTimes;
 	public static Dictionary<Note, double> noteDurations;
@@ -38,7 +29,16 @@ public class Conductor : MonoBehaviour
 
 	private void Awake()
 	{
-		MusicStartAnnouncer.OnStart += HandleWarmedUp;
+		MusicStartAnnouncer.OnStart += HandleStart;
+	}
+
+	private void HandleStart(double startTime)
+	{
+		MusicStartAnnouncer.OnStart -= HandleStart;
+
+		Initialize(startTime);
+
+		Metronome.OnTick += HandleTick;
 	}
 
 	private void Initialize(double startTime)
@@ -48,7 +48,7 @@ public class Conductor : MonoBehaviour
 
 		foreach (Note note in notes)
 		{
-			noteDurations[note] = Metronome.TickLength * noteTickLengths[note];
+			noteDurations[note] = Metronome.TickLength * (int)note;
 		}
 
 		foreach (Note note in notes)
@@ -57,25 +57,16 @@ public class Conductor : MonoBehaviour
 		}
 	}
 
-	private void HandleWarmedUp(double startTime)
+	private void HandleTick(int count)
 	{
-		MusicStartAnnouncer.OnStart -= HandleWarmedUp;
-
-		Initialize(startTime);
-
-		Metronome.OnTick += HandleTick;
-	}
-
-	private void HandleTick()
-	{
-		tickCount++;
+		tickCount += count;
 		tickCount %= 32;
 
 		var nextTickTime = Metronome.NextTick;
 
 		foreach (Note note in notes)
 		{
-			if (tickCount % noteTickLengths[note] == 0)
+			if (tickCount % (int)note == 0)
 			{
 				nextTimes[note] = nextTickTime + noteDurations[note];
 			}
@@ -85,7 +76,7 @@ public class Conductor : MonoBehaviour
 	public static double GetNextNote(Note note, int offset = 0)
 	{
 		var time = nextTimes[note];
-		Debug.Log(time);
+		// Debug.Log(time);
 		return time + noteDurations[note] * offset;
 	}
 }
