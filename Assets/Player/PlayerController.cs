@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
 	private AudioMixerSnapshot mainSnapshot;
 	[SerializeField]
 	private AudioMixerSnapshot reloadSnapshot;
+
 	[SerializeField]
 	private AudioSource moveAudioSource;
 	[SerializeField]
@@ -26,8 +27,11 @@ public class PlayerController : MonoBehaviour
 	private AudioSource shootAudioSource;
 	[SerializeField]
 	private AudioSource reloadAudioSource;
+
 	[SerializeField]
 	private GameObject beamControllerPrefab;
+	[SerializeField]
+	private DashController dashController;
 
 	private StateMachine fsm = new StateMachine();
 
@@ -159,21 +163,25 @@ public class PlayerController : MonoBehaviour
 	private IEnumerator Dash()
 	{
 		Vector2 direction = velocity.normalized;
-		dashAudioSource.PlayScheduled(NoteTracker.GetNextNoteTime(Note.Thirtysecond));
+		var dashTime = (float)NoteTracker.noteDurations[Note.Sixteenth];
+		var distance = dashTime * dashSpeed;
+
+		dashController.Activate(direction, distance);
+
+		var nextThirtysecond = NoteTracker.GetNextNoteTime(Note.Thirtysecond);
+		dashAudioSource.PlayScheduled(nextThirtysecond);
+
 		float timer = 0f;
-		float target = (float)NoteTracker.noteDurations[Note.Sixteenth];
-		while (true)
+		while (timer < dashTime)
 		{
-			Debug.Log(timer - target);
 			timer += Time.deltaTime;
-			if (timer >= target) break;
-			else
-			{
-				transform.Translate(direction * dashSpeed * Time.deltaTime);
-			}
+			transform.Translate(direction * dashSpeed * Time.deltaTime);
 			yield return null;
 		}
-		dashAudioSource.SetScheduledEndTime(NoteTracker.GetNextNoteTime(Note.Thirtysecond));
+
+		nextThirtysecond = NoteTracker.GetNextNoteTime(Note.Thirtysecond);
+		dashAudioSource.SetScheduledEndTime(nextThirtysecond);
+
 		fsm.ChangeToState(STATE_MOVE);
 	}
 
