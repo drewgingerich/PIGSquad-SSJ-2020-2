@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviour
 
 	private StateMachine fsm = new StateMachine();
 
-	private PlayerInputActions controls;
+	public static PlayerInputActions controls;
 	private Vector2 velocity = Vector2.zero;
 	private Vector2 moveInput;
 	private Vector2 aimInput;
@@ -60,6 +60,8 @@ public class PlayerController : MonoBehaviour
 
 	private void Awake()
 	{
+		if (controls == null) WireControls();
+
 		playerTransform = transform;
 
 		fsm.AddState(STATE_IDLE, EnterIdleState, UpdateIdleState, null);
@@ -71,10 +73,7 @@ public class PlayerController : MonoBehaviour
 
 	private void OnEnable()
 	{
-		if (controls == null) WireControls();
-
 		controls.Player.Enable();
-
 		fsm.ChangeToState(STATE_IDLE);
 	}
 
