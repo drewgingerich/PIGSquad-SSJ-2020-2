@@ -83,4 +83,10 @@ public class Conductor : MonoBehaviour
 		var time = nextTimes[note];
 		return time + noteDurations[note] * offset;
 	}
+
+	public static double CalcNoteTime(Note note, int offset = 0)
+	{
+		var startTime = GetNextNote(Note.Thirtysecond, -1);
+		return startTime + noteDurations[note];
+	}
 }

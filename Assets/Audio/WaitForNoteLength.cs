@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class WaitForNote : CustomYieldInstruction
+public class WaitForNoteLength : CustomYieldInstruction
 {
 	private double targetTime;
 
@@ -12,8 +12,8 @@ public class WaitForNote : CustomYieldInstruction
 		}
 	}
 
-	public WaitForNote(Note note, int offset = 0)
+	public WaitForNoteLength(Note note, int offset = 0)
 	{
-		targetTime = Conductor.GetNextNote(note, offset);
+		targetTime = Conductor.CalcNoteTime(note, offset);
 	}
 }
