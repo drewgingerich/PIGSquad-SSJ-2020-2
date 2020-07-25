@@ -24,6 +24,8 @@ public class BeamController : MonoBehaviour
 
 	private IEnumerator Activate()
 	{
+		yield return new WaitForNote(Note.Eighth);
+		yield return new WaitForNote(Note.Sixteenth);
 		var hits = Physics2D.Raycast(transform.position, direction, hitFilter, hitBuffer);
 
 		if (hits > 0)
