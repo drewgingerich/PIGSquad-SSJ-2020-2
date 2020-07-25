@@ -88,7 +88,7 @@ MonoBehaviour:
   m_Follow: {fileID: 9036477212059778028}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 10
+    OrthographicSize: 15
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -259,7 +259,7 @@ PrefabInstance:
     - target: {fileID: 7377408108035502433, guid: 1cc0a9b21fa1046868b8a65b6203ef0a,
         type: 3}
       propertyPath: orthographic size
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 7377408108035502435, guid: 1cc0a9b21fa1046868b8a65b6203ef0a,
         type: 3}
