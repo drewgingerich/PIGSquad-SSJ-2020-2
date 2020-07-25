@@ -25,7 +25,7 @@ public class CamJuice : MonoBehaviour
 
 	private void _Kick(Vector3 direction)
 	{
-		kickSource.GenerateImpulse(direction * -1);
+		kickSource.GenerateImpulse(direction);
 	}
 
 	private void _Bounce()

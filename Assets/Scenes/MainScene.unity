@@ -1571,7 +1571,7 @@ PrefabInstance:
     - target: {fileID: 6608671522727682123, guid: 9569016bd4b164537ab07bffffa59857,
         type: 3}
       propertyPath: speed
-      value: 0.075
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 6608671522727682123, guid: 9569016bd4b164537ab07bffffa59857,
         type: 3}
@@ -6066,6 +6066,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1783275366018603370, guid: 29d303c2f1fc24ed69812e25e267ab0a,
+        type: 3}
+      propertyPath: m_Name
+      value: Kick
+      objectReference: {fileID: 0}
+    - target: {fileID: 5567229256800017068, guid: 29d303c2f1fc24ed69812e25e267ab0a,
+        type: 3}
+      propertyPath: m_Name
+      value: Shake
+      objectReference: {fileID: 0}
+    - target: {fileID: 5977143337188913679, guid: 29d303c2f1fc24ed69812e25e267ab0a,
+        type: 3}
+      propertyPath: m_ImpulseDefinition.m_AmplitudeGain
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 9036477211791206418, guid: 29d303c2f1fc24ed69812e25e267ab0a,
         type: 3}
       propertyPath: m_LocalPosition.x
