@@ -10,37 +10,40 @@ public class PlayerSfx : MonoBehaviour
 
 	private static PlayerSfx inst;
 
-	private static bool move = false;
-	private static bool dash = false;
+	private static bool playingMoveSfx = false;
+
+	private static bool playingDashSfx = false;
 	private static Coroutine endDashRoutine;
 
-	// Start is called before the first frame update
-	public static void PlayDashSfx()
+	public static void PlayDashSfx(double start, double end)
 	{
-		dash = true;
-		var startTime = Conductor.GetNextNote(Note.Thirtysecond);
-		var endTime = startTime + Conductor.noteDurations[Note.Eighth];
-		inst.dashSfx.PlayScheduled(startTime);
-		inst.dashSfx.SetScheduledEndTime(endTime);
-		endDashRoutine = inst.StartCoroutine(inst.WaitForEndDashSfx(endTime));
+		if (endDashRoutine != null) inst.StopCoroutine(endDashRoutine);
+		playingDashSfx = true;
+
+		inst.dashSfx.PlayScheduled(start);
+		inst.dashSfx.SetScheduledEndTime(end);
+
+		endDashRoutine = inst.StartCoroutine(inst.WaitForEndDashSfx(end));
 	}
 
 	private IEnumerator WaitForEndDashSfx(double end)
 	{
 		yield return new WaitForDspTime(end);
-		dash = false;
+		playingDashSfx = false;
 	}
 
 	public static void StartMoveSfx()
 	{
-
-		move = true;
-		inst.moveSfx.PlayScheduled(Conductor.GetNextNote(Note.Eighth));
+		if (!playingMoveSfx)
+		{
+			inst.moveSfx.PlayScheduled(Conductor.GetNextNote(Note.Eighth));
+			playingMoveSfx = true;
+		}
 	}
 
 	public static void StopMoveSfx()
 	{
-		move = false;
+		playingMoveSfx = false;
 		inst.moveSfx.SetScheduledEndTime(Conductor.GetNextNote(Note.Eighth));
 	}
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AfterimageVfx : MonoBehaviour
@@ -7,47 +8,68 @@ public class AfterimageVfx : MonoBehaviour
 	[SerializeField]
 	private GameObject afterImagePrefab;
 	[SerializeField]
-	private int afterImageCount = 4;
+	private Note destroyDelayLength = Note.Eighth;
 	[SerializeField]
-	private Note destroyDelay = Note.Eighth;
+	private int baseAfterimageCount = 4;
 
 	private Vector2 direction;
-	private float distance;
-	private float time;
+	private float spawnSpacing;
+	private float spawnTiming;
+	private float dashTimeRemaining;
+	private int afterImageCount;
+	private List<GameObject> afterimages = new List<GameObject>();
 
-	public void CreateAfterimages(Vector2 direction, float distance, float time)
+	public void Run(Vector2 direction, float distance, float time, float fraction)
 	{
 		this.direction = direction;
-		this.distance = distance;
-		this.time = time;
+		spawnTiming = time / baseAfterimageCount;
+		dashTimeRemaining = time * fraction;
+		afterImageCount = (int)(baseAfterimageCount * fraction);
+		spawnSpacing = distance * fraction / afterImageCount;
+
 		StartCoroutine(AfterimageRoutine());
 	}
 
 	public IEnumerator AfterimageRoutine()
 	{
 		yield return CreateAfterimages();
-		yield return new WaitForNote(destroyDelay);
+		yield return new WaitForNote(Note.Sixteenth, 1);
 		yield return DestroyAfterimages();
 	}
 
 	public IEnumerator CreateAfterimages()
 	{
 		var spawnPosition = (Vector2)transform.position;
-		var spacing = distance / (afterImageCount - 1);
-		// Making afterimage spawn a bit ahead looks cooler!
-		// spawnPosition += direction * spacing;
-		var pause = (float)Conductor.noteDurations[Note.Thirtysecond];
-		for (int i = 0; i < afterImageCount; i++)
+
+		while (dashTimeRemaining > 0)
 		{
-			Instantiate(afterImagePrefab, spawnPosition, Quaternion.identity);
-			spawnPosition += direction * spacing;
-			yield return new WaitForSeconds(pause);
+			var go = Instantiate(afterImagePrefab, spawnPosition, Quaternion.identity);
+			afterimages.Add(go);
+
+			spawnPosition += direction * spawnSpacing;
+			dashTimeRemaining -= spawnTiming;
+
+			yield return new WaitForSeconds(spawnTiming);
 		}
 	}
 
 	public IEnumerator DestroyAfterimages()
 	{
-		PlayerSfx.PlayDashSfx();
-		yield return new WaitForNote(Note.Thirtysecond);
+		var noteSpacing = Note.Thirtysecond;
+
+		var start = Conductor.GetNextNote(noteSpacing);
+		var end = Conductor.GetNextTick(afterimages.Count * (int)noteSpacing);
+		Debug.Log("hi");
+		PlayerSfx.PlayDashSfx(start, end);
+
+		yield return new WaitForNote(noteSpacing);
+		while (afterimages.Count > 0)
+		{
+			Destroy(afterimages[0]);
+			afterimages.RemoveAt(0);
+			// yield return new WaitForNote(noteSpacing);
+		}
+
+		Destroy(gameObject);
 	}
 }

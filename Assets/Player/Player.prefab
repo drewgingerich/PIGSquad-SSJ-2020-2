@@ -1,52 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1364930872740490092
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 199433133394493590}
-  - component: {fileID: 6658423984258372168}
-  m_Layer: 0
-  m_Name: Dash
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &199433133394493590
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1364930872740490092}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 6448800657012122224}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6658423984258372168
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1364930872740490092}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72014c47a42774e5398baae98307b397, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  afterImagePrefab: {fileID: 5952830623376875920, guid: 37e3bd825d26748d09c6acbef64cf1b2,
-    type: 3}
-  afterImageCount: 4
-  destroyDelay: 4
 --- !u!1 &5142784825274781665
 GameObject:
   m_ObjectHideFlags: 0
@@ -73,8 +26,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 199433133394493590}
+  m_Children: []
   m_Father: {fileID: 6608671522727682127}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -198,11 +150,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 2
-  moveAudioSource: {fileID: 0}
-  dashDistance: 2
-  dashNoteType: 4
-  dashAudioSource: {fileID: 0}
-  afterimageController: {fileID: 6658423984258372168}
+  dashDistance: 1
+  dashNoteTime: 2
+  afterimageVfxPrefab: {fileID: 3715077231388815730, guid: 8f688d96e90d8468ba1c205f3a5a91b7,
+    type: 3}
   shootAudioSource: {fileID: 0}
   beamControllerPrefab: {fileID: 5952830623376875920, guid: 1bb42c80535ea44b6b325f27189d382e,
     type: 3}

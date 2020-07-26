@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -10,18 +9,14 @@ public class PlayerController : MonoBehaviour
 	[Header("Move")]
 	[SerializeField]
 	private float moveSpeed = 2f;
-	[SerializeField]
-	private AudioSource moveAudioSource;
 
 	[Header("Dash")]
 	[SerializeField]
 	private float dashDistance = 2f;
 	[SerializeField]
-	private Note dashNoteType = Note.Eighth;
+	private float dashDuration = 0.2f;
 	[SerializeField]
-	private AudioSource dashAudioSource;
-	[SerializeField]
-	private AfterimageVfx afterimageController;
+	private AfterimageVfx afterimageVfxPrefab;
 
 	[Header("Shoot")]
 	[SerializeField]
@@ -48,7 +43,8 @@ public class PlayerController : MonoBehaviour
 	private bool shootInput = false;
 	private bool reloadInput = false;
 
-	private bool isDashing = false;
+	private RaycastHit2D[] hitBuffer = new RaycastHit2D[1];
+
 	private bool isShooting = false;
 	private bool isReloading = false;
 	private float dashTimer;
@@ -70,9 +66,9 @@ public class PlayerController : MonoBehaviour
 
 		playerTransform = transform;
 
-		fsm.AddState(STATE_IDLE, null, UpdateIdleState, null);
+		fsm.AddState(STATE_IDLE, EnterIdleState, UpdateIdleState, null);
 		fsm.AddState(STATE_MOVE, EnterMoveState, UpdateMoveState, ExitMoveState);
-		fsm.AddState(STATE_DASH, EnterDashState, null, ExitDashState);
+		fsm.AddState(STATE_DASH, EnterDashState, null, null);
 		fsm.AddState(STATE_SHOOT, EnterShootState, null, ExitShootState);
 		fsm.AddState(STATE_RELOAD, EnterReloadState, null, ExitReloadState);
 	}
@@ -104,18 +100,6 @@ public class PlayerController : MonoBehaviour
 
 	private void Update()
 	{
-		if (dashInput && !isDashing && !isReloading)
-		{
-			fsm.ChangeToState(STATE_DASH);
-		}
-		else if (reloadInput && !isReloading)
-		{
-			fsm.ChangeToState(STATE_RELOAD);
-		}
-		else if (shootInput && !isShooting)
-		{
-			fsm.ChangeToState(STATE_SHOOT);
-		}
 		fsm.Update();
 	}
 
@@ -123,9 +107,15 @@ public class PlayerController : MonoBehaviour
 
 	#region STATE_IDLE
 
+	private void EnterIdleState()
+	{
+		rb.velocity = Vector2.zero;
+	}
+
 	private void UpdateIdleState()
 	{
-		if (moveInput != Vector2.zero) fsm.ChangeToState(STATE_MOVE);
+		if (shootInput) fsm.ChangeToState(STATE_SHOOT);
+		else if (moveInput != Vector2.zero) fsm.ChangeToState(STATE_MOVE);
 	}
 
 	#endregion
@@ -139,15 +129,20 @@ public class PlayerController : MonoBehaviour
 
 	private void UpdateMoveState()
 	{
-		bool noInput = moveInput == Vector2.zero;
-		if (noInput) fsm.ChangeToState(STATE_IDLE);
+		if (dashInput) fsm.ChangeToState(STATE_DASH);
+		// else if (shootInput) fsm.ChangeToState(STATE_SHOOT);
+		else if (moveInput == Vector2.zero)
+		{
+			fsm.ChangeToState(STATE_IDLE);
+			return;
+		}
 
 		rb.velocity = moveInput * moveSpeed;
 	}
 
 	private void ExitMoveState()
 	{
-		PlayerSfx.StartMoveSfx();
+		PlayerSfx.StopMoveSfx();
 	}
 
 	#endregion
@@ -157,30 +152,25 @@ public class PlayerController : MonoBehaviour
 	private void EnterDashState()
 	{
 		dashInput = false;
-		isDashing = true;
 		StartCoroutine(Dash());
 	}
 
 	private IEnumerator Dash()
 	{
 		Vector2 direction = moveInput;
-		float dashTime = (float)Conductor.noteDurations[dashNoteType];
-		var dashSpeed = dashDistance / dashTime;
-		dashAudioSource.PlayScheduled(Conductor.GetNextNote(Note.Eighth));
-		yield return new WaitForNote(Note.Eighth);
+		var dashSpeed = dashDistance / dashDuration;
 
-		afterimageController.CreateAfterimages(direction, dashDistance, dashTime);
+		var hits = rb.Cast(direction, hitBuffer, dashDistance);
+		var dashFraction = hits > 0 ? hitBuffer[0].distance / dashDistance : 1;
+
+		var vfx = Instantiate(afterimageVfxPrefab, rb.position, Quaternion.identity);
+		vfx.Run(direction, dashDistance, dashDuration, dashFraction);
+
 		rb.velocity = direction * dashSpeed;
-		dashAudioSource.SetScheduledEndTime(Conductor.CalcNoteTime(dashNoteType));
-		yield return new WaitForNoteLength(dashNoteType);
 
-		rb.velocity = direction * moveSpeed;
+		yield return new WaitForSeconds(dashDuration * dashFraction);
+
 		fsm.ChangeToState(STATE_MOVE);
-	}
-
-	private void ExitDashState()
-	{
-		isDashing = false;
 	}
 
 	#endregion
