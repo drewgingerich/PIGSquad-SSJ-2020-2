@@ -102,6 +102,8 @@ public class PlayerController : MonoBehaviour
 
 	private void Update()
 	{
+		Debug.Log("--------");
+		Debug.Log(moveInput);
 		fsm.Update();
 	}
 
@@ -132,7 +134,7 @@ public class PlayerController : MonoBehaviour
 	private void UpdateMoveState()
 	{
 		if (dashInput) fsm.ChangeToState(STATE_DASH);
-		// else if (shootInput) fsm.ChangeToState(STATE_SHOOT);
+		else if (shootInput) fsm.ChangeToState(STATE_SHOOT);
 		else if (moveInput == Vector2.zero)
 		{
 			fsm.ChangeToState(STATE_IDLE);
@@ -140,6 +142,7 @@ public class PlayerController : MonoBehaviour
 		}
 
 		rb.velocity = moveInput * moveSpeed;
+		Debug.Log(rb.velocity);
 	}
 
 	private void ExitMoveState()
