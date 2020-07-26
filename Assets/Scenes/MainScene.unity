@@ -1566,7 +1566,7 @@ PrefabInstance:
     - target: {fileID: 6608671522727682123, guid: 9569016bd4b164537ab07bffffa59857,
         type: 3}
       propertyPath: dashDistance
-      value: 15
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 6608671522727682123, guid: 9569016bd4b164537ab07bffffa59857,
         type: 3}

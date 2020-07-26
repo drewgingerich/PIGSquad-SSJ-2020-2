@@ -14,18 +14,19 @@ public class AfterimageVfx : MonoBehaviour
 
 	private Vector2 direction;
 	private float spawnSpacing;
-	private float spawnTiming;
-	private float dashTimeRemaining;
-	private int afterImageCount;
-	private List<GameObject> afterimages = new List<GameObject>();
+	private float spawnTimeSpacing;
+	private float endTime;
+	private int afterimageCount;
+	private List<Afterimage> afterimages = new List<Afterimage>();
 
 	public void Run(Vector2 direction, float distance, float time, float fraction)
 	{
 		this.direction = direction;
-		spawnTiming = time / baseAfterimageCount;
-		dashTimeRemaining = time * fraction;
-		afterImageCount = (int)(baseAfterimageCount * fraction);
-		spawnSpacing = distance * fraction / afterImageCount;
+		spawnTimeSpacing = time / baseAfterimageCount;
+		endTime = time * fraction;
+		afterimageCount = (int)(baseAfterimageCount * fraction);
+		spawnSpacing = distance * fraction / afterimageCount;
+
 
 		StartCoroutine(AfterimageRoutine());
 	}
@@ -40,35 +41,38 @@ public class AfterimageVfx : MonoBehaviour
 	public IEnumerator CreateAfterimages()
 	{
 		var spawnPosition = (Vector2)transform.position;
+		var dashTimeRemaining = endTime;
 
 		while (dashTimeRemaining > 0)
 		{
 			var go = Instantiate(afterImagePrefab, spawnPosition, Quaternion.identity);
-			afterimages.Add(go);
+			var afterimage = go.GetComponent<Afterimage>();
+			afterimages.Add(afterimage);
 
 			spawnPosition += direction * spawnSpacing;
-			dashTimeRemaining -= spawnTiming;
+			dashTimeRemaining -= spawnTimeSpacing;
 
-			yield return new WaitForSeconds(spawnTiming);
+			yield return new WaitForSeconds(spawnTimeSpacing);
 		}
 	}
 
 	public IEnumerator DestroyAfterimages()
 	{
-		var noteSpacing = Note.Thirtysecond;
+		var spacingNote = Note.Thirtysecond;
+		var spacingTime = Conductor.noteDurations[spacingNote];
+		var startNote = Note.Quarter;
 
-		var start = Conductor.GetNextNote(noteSpacing);
-		var end = Conductor.GetNextTick(afterimages.Count * (int)noteSpacing);
-		Debug.Log("hi");
+		var start = Conductor.GetNextNote(startNote);
+		var end = start + Conductor.noteDurations[spacingNote] * afterimages.Count;
 		PlayerSfx.PlayDashSfx(start, end);
 
-		yield return new WaitForNote(noteSpacing);
-		while (afterimages.Count > 0)
+		for (int i = 0; i < afterimages.Count; i++)
 		{
-			Destroy(afterimages[0]);
-			afterimages.RemoveAt(0);
-			// yield return new WaitForNote(noteSpacing);
+			var targetTime = start + i * spacingTime;
+			afterimages[i].Run(targetTime);
 		}
+
+		yield return new WaitForNote(startNote);
 
 		Destroy(gameObject);
 	}

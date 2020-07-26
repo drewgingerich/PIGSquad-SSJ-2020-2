@@ -84,6 +84,18 @@ public class Conductor : MonoBehaviour
 		return time + noteDurations[note] * offset;
 	}
 
+	public static double GetNextNote(Note note, double reference, int offset = 0)
+	{
+		var diff = reference - AudioSettings.dspTime;
+		var time = nextTimes[note];
+		var noteDuration = noteDurations[note];
+		while (time < reference)
+		{
+			time += noteDuration;
+		}
+		return time + noteDuration * offset;
+	}
+
 	public static double GetNextTick(int offset = 0, bool absolute = false)
 	{
 		var ticks = 0;

@@ -3,33 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class AfterImage : MonoBehaviour
+public class Afterimage : MonoBehaviour
 {
-	private Vector2 direction;
-	private float speed;
-	private Note duration;
+	private double targetTime;
 
-	public void Go(Vector2 direction, float speed, Note duration)
+	public void Run(double targetTime)
 	{
-		this.direction = direction;
-		this.speed = speed;
-		this.duration = duration;
+		this.targetTime = targetTime;
+		StartCoroutine(VfxRoutine());
 	}
 
-	// public IEnumerator GoRoutine()
-	// {
-	// 	dashController.Activate(direction, dashDistance);
-	// 	rb.velocity = direction * dashSpeed;
-	// 	dashAudioSource.SetScheduledEndTime(Conductor.CalcNoteTime(dashNoteType));
-	// 	yield return new WaitForNoteLength(dashNoteType);
-
-	// 	rb.velocity = direction * moveSpeed;
-	// 	fsm.ChangeToState(STATE_MOVE);
-	// 	yield return null;
-	// }
-
-	private void Awake()
+	private IEnumerator VfxRoutine()
 	{
-		Destroy(gameObject, 0.25f);
+		yield return new WaitForDspTime(targetTime);
+		Destroy(gameObject);
 	}
 }
