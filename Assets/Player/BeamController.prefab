@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   preFireNoteTime: 8
-  preFireNoteOffset: 1
+  preFireNoteOffset: 3
   aimBeamWidth: 0.05
   fireBeamWidth: 0.15
   beam: {fileID: 2316365970971686046}
