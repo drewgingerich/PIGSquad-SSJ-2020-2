@@ -2,30 +2,18 @@
 
 public class WaitForTick : CustomYieldInstruction
 {
-	private double remainingTicks;
+	private double targetTime;
 
 	public override bool keepWaiting
 	{
 		get
 		{
-			return remainingTicks > 0;
+			return targetTime > AudioSettings.dspTime;
 		}
 	}
 
-	public WaitForTick(int tick)
+	public WaitForTick(int offset, bool absolute = false)
 	{
-		remainingTicks = tick;
-		remainingTicks -= Conductor.tickCount;
-		Metronome.OnTick += HandleTick;
-
-	}
-
-	private void HandleTick(int count)
-	{
-		remainingTicks -= count;
-		if (remainingTicks <= 0)
-		{
-			Metronome.OnTick -= HandleTick;
-		}
+		targetTime = Conductor.GetNextTick(offset, absolute);
 	}
 }

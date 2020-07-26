@@ -84,9 +84,18 @@ public class Conductor : MonoBehaviour
 		return time + noteDurations[note] * offset;
 	}
 
-	public static double CalcNoteTime(Note note, int offset = 0)
+	public static double GetNextTick(int offset = 0, bool absolute = false)
 	{
-		var startTime = GetNextNote(Note.Thirtysecond, -1);
-		return startTime + noteDurations[note];
+		var ticks = 0;
+		if (absolute)
+		{
+			if (offset < tickCount) offset += 32;
+			ticks = offset - tickCount;
+		}
+		else
+		{
+			ticks = offset;
+		}
+		return Metronome.NextTick + Metronome.TickLength * (ticks - 1);
 	}
 }
