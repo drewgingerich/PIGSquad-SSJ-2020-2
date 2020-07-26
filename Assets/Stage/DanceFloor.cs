@@ -34,8 +34,6 @@ public class DanceFloor : MonoBehaviour
 
 		while (true)
 		{
-			Debug.Log("hello");
-
 			var targetTime = Conductor.GetNextNote(switchTimeNote);
 			var duration = (float)(targetTime - AudioSettings.dspTime);
 
