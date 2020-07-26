@@ -94,6 +94,11 @@ public class BeamController : MonoBehaviour
 	private IEnumerator Fire()
 	{
 		var hits = Physics2D.Raycast(transform.position, direction, hitFilter, hitBuffer);
+		if (hits > 0)
+		{
+			var hitDetector = hitBuffer[0].collider.gameObject.GetComponent<HitDetector>();
+			if (hitDetector != null) hitDetector.Hit(Hit.Shot, direction);
+		}
 
 		beam.startWidth = beam.endWidth = fireBeamWidth;
 
