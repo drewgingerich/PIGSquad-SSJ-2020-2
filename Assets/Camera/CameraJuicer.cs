@@ -4,11 +4,11 @@ using Cinemachine;
 public class CameraJuicer : MonoBehaviour
 {
 	[SerializeField]
-	private CinemachineImpulseSource kickSource;
+	private CinemachineImpulseSource kicker;
 	[SerializeField]
-	private CinemachineImpulseSource shakeSource;
+	private CinemachineImpulseSource shaker;
 	[SerializeField]
-	private CinemachineVirtualCamera virtualCam;
+	private CameraBounce bouncer;
 
 	private static CameraJuicer inst;
 
@@ -18,34 +18,18 @@ public class CameraJuicer : MonoBehaviour
 		inst = this;
 	}
 
-	private void _Shake()
+	public static void Shake(float magnitude = 1f)
 	{
-		shakeSource.GenerateImpulse(1f);
+		inst.shaker.GenerateImpulse(magnitude);
 	}
 
-	private void _Kick(Vector3 direction)
+	public static void Kick(Vector3 vector)
 	{
-		kickSource.GenerateImpulse(direction);
+		inst.kicker.GenerateImpulse(vector);
 	}
 
-	private void _Bounce()
+	public static void Bounce(float magnitude)
 	{
-
+		inst.bouncer.Bounce(magnitude);
 	}
-
-	public static void Shake()
-	{
-		inst._Shake();
-	}
-
-	public static void Kick(Vector3 direction)
-	{
-		inst._Kick(direction);
-	}
-
-	public static void Bounce()
-	{
-		inst._Bounce();
-	}
-
 }
