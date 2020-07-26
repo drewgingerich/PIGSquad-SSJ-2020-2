@@ -6,7 +6,7 @@ public class BloodSpurt : MonoBehaviour
 	[SerializeField]
 	private ParticleSystem bloodSystem;
 
-	public void Start(Vector2 direction)
+	public void Run(Vector2 direction)
 	{
 		float angle = Vector2.SignedAngle(Vector2.right, direction);
 		transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);

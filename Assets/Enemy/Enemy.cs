@@ -46,7 +46,7 @@ public class Enemy : MonoBehaviour
 
 		var bloodObject = Instantiate(bloodPrefab, transform.position, Quaternion.identity);
 		var bloodSpurtVfx = bloodObject.GetComponent<BloodSpurt>();
-		bloodSpurtVfx.Start(direction);
+		bloodSpurtVfx.Run(direction);
 		yield return new WaitForNote(Note.Quarter, 3);
 
 		bloodSpurtVfx.Stop();
