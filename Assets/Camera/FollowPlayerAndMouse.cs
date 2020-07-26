@@ -15,15 +15,15 @@ public class FollowPlayerAndMouse : MonoBehaviour
 	{
 		PlayerController.controls.Player.Aim.performed += ctx =>
 		{
-			var screenPoint = ctx.ReadValue<Vector2>();
-			aimInput = Camera.main.ScreenToWorldPoint(screenPoint);
+			aimInput = ctx.ReadValue<Vector2>();
 		};
 
 	}
 
 	void Update()
 	{
-		var diff = (Vector3)aimInput - player.position;
+		var mouseWorldPosition = Camera.main.ScreenToWorldPoint(aimInput);
+		var diff = (Vector3)mouseWorldPosition - player.position;
 		transform.position = player.position + diff * mouseImportance;
 	}
 }
