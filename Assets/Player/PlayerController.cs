@@ -7,38 +7,41 @@ public class PlayerController : MonoBehaviour
 {
 	public static Transform playerTransform;
 
-	[Header("Tweaks")]
+	[Header("Move")]
 	[SerializeField]
-	private float speed = 2f;
-	[SerializeField]
-	private float mass = 5f;
-	[SerializeField]
-	private float dashSpeed = 2f;
-
-	[Header("Refs")]
-	[SerializeField]
-	private AudioMixerSnapshot mainSnapshot;
-	[SerializeField]
-	private AudioMixerSnapshot reloadSnapshot;
-
+	private float moveSpeed = 2f;
 	[SerializeField]
 	private AudioSource moveAudioSource;
+
+	[Header("Dash")]
+	[SerializeField]
+	private float dashDistance = 2f;
+	[SerializeField]
+	private Note dashNoteType = Note.Eighth;
 	[SerializeField]
 	private AudioSource dashAudioSource;
 	[SerializeField]
+	private AfterimageVfx afterimageController;
+
+	[Header("Shoot")]
+	[SerializeField]
 	private AudioSource shootAudioSource;
+	[SerializeField]
+	private GameObject beamControllerPrefab;
+
+	[Header("Reload")]
+	[SerializeField]
+	private AudioMixerSnapshot reloadSnapshot;
 	[SerializeField]
 	private AudioSource reloadAudioSource;
 
+	[Header("General")]
 	[SerializeField]
-	private GameObject beamControllerPrefab;
+	private Rigidbody2D rb;
 	[SerializeField]
-	private DashController dashController;
-
-	private StateMachine fsm = new StateMachine();
+	private AudioMixerSnapshot mainSnapshot;
 
 	public static PlayerInputActions controls;
-	private Vector2 velocity = Vector2.zero;
 	private Vector2 moveInput;
 	private Vector2 aimInput;
 	private bool dashInput = false;
@@ -50,6 +53,7 @@ public class PlayerController : MonoBehaviour
 	private bool isReloading = false;
 	private float dashTimer;
 
+	private StateMachine fsm = new StateMachine();
 	private const int STATE_IDLE = 0;
 	private const int STATE_MOVE = 1;
 	private const int STATE_DASH = 2;
@@ -60,11 +64,13 @@ public class PlayerController : MonoBehaviour
 
 	private void Awake()
 	{
+		rb = GetComponent<Rigidbody2D>();
+
 		if (controls == null) WireControls();
 
 		playerTransform = transform;
 
-		fsm.AddState(STATE_IDLE, EnterIdleState, UpdateIdleState, null);
+		fsm.AddState(STATE_IDLE, null, UpdateIdleState, null);
 		fsm.AddState(STATE_MOVE, EnterMoveState, UpdateMoveState, ExitMoveState);
 		fsm.AddState(STATE_DASH, EnterDashState, null, ExitDashState);
 		fsm.AddState(STATE_SHOOT, EnterShootState, null, ExitShootState);
@@ -117,11 +123,6 @@ public class PlayerController : MonoBehaviour
 
 	#region STATE_IDLE
 
-	private void EnterIdleState()
-	{
-		velocity = Vector2.zero;
-	}
-
 	private void UpdateIdleState()
 	{
 		if (moveInput != Vector2.zero) fsm.ChangeToState(STATE_MOVE);
@@ -133,23 +134,20 @@ public class PlayerController : MonoBehaviour
 
 	private void EnterMoveState()
 	{
-		moveAudioSource.PlayScheduled(Conductor.GetNextNote(Note.Eighth));
+		PlayerSfx.StartMoveSfx();
 	}
 
 	private void UpdateMoveState()
 	{
-		bool stopped = Vector2.Distance(velocity, Vector2.zero) < 0.05f;
 		bool noInput = moveInput == Vector2.zero;
-		if (stopped && noInput) fsm.ChangeToState(STATE_IDLE);
+		if (noInput) fsm.ChangeToState(STATE_IDLE);
 
-		Vector2 moveDiff = moveInput - velocity;
-		velocity += moveDiff * Time.deltaTime * mass;
-		transform.Translate(velocity * speed);
+		rb.velocity = moveInput * moveSpeed;
 	}
 
 	private void ExitMoveState()
 	{
-		moveAudioSource.SetScheduledEndTime(Conductor.GetNextNote(Note.Eighth));
+		PlayerSfx.StartMoveSfx();
 	}
 
 	#endregion
@@ -165,26 +163,18 @@ public class PlayerController : MonoBehaviour
 
 	private IEnumerator Dash()
 	{
-		Vector2 direction = velocity.normalized;
-		var dashTime = (float)Conductor.noteDurations[Note.Sixteenth];
-		var distance = dashTime * dashSpeed;
+		Vector2 direction = moveInput;
+		float dashTime = (float)Conductor.noteDurations[dashNoteType];
+		var dashSpeed = dashDistance / dashTime;
+		dashAudioSource.PlayScheduled(Conductor.GetNextNote(Note.Eighth));
+		yield return new WaitForNote(Note.Eighth);
 
-		dashController.Activate(direction, distance);
+		afterimageController.CreateAfterimages(direction, dashDistance, dashTime);
+		rb.velocity = direction * dashSpeed;
+		dashAudioSource.SetScheduledEndTime(Conductor.CalcNoteTime(dashNoteType));
+		yield return new WaitForNoteLength(dashNoteType);
 
-		var nextThirtysecond = Conductor.GetNextNote(Note.Thirtysecond);
-		dashAudioSource.PlayScheduled(nextThirtysecond);
-
-		float timer = 0f;
-		while (timer < dashTime)
-		{
-			timer += Time.deltaTime;
-			transform.Translate(direction * dashSpeed * Time.deltaTime);
-			yield return null;
-		}
-
-		nextThirtysecond = Conductor.GetNextNote(Note.Thirtysecond);
-		dashAudioSource.SetScheduledEndTime(nextThirtysecond);
-
+		rb.velocity = direction * moveSpeed;
 		fsm.ChangeToState(STATE_MOVE);
 	}
 

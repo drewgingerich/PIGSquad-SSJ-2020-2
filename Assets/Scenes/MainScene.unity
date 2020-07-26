@@ -492,6 +492,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efdf09f2187784b25a0601697957aa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &464493801 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6608671522727682122, guid: 9569016bd4b164537ab07bffffa59857,
+    type: 3}
+  m_PrefabInstance: {fileID: 6608671522787172114}
+  m_PrefabAsset: {fileID: 0}
+--- !u!50 &464493805
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 464493801}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 1
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 1
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 4
 --- !u!1 &659169212
 GameObject:
   m_ObjectHideFlags: 0
@@ -907,7 +934,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilemap: {fileID: 1592406096}
   color1: {r: 0.5007565, g: 0.8773585, b: 0.5083572, a: 1}
-  color2: {r: 0.5446778, g: 0.754717, b: 0.6370027, a: 0.101960786}
+  color2: {r: 0.5446778, g: 0.754717, b: 0.6370027, a: 0}
 --- !u!114 &1749462819 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5046594536179402160, guid: 62bceaae75128412799880c3d69dfa56,
@@ -1469,6 +1496,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 508492014121246269, guid: 9569016bd4b164537ab07bffffa59857,
+        type: 3}
+      propertyPath: dashSfx
+      value: 
+      objectReference: {fileID: 2066964274}
+    - target: {fileID: 508492014121246269, guid: 9569016bd4b164537ab07bffffa59857,
+        type: 3}
+      propertyPath: moveSfx
+      value: 
+      objectReference: {fileID: 1147395816}
     - target: {fileID: 6608671522727682122, guid: 9569016bd4b164537ab07bffffa59857,
         type: 3}
       propertyPath: m_Name
@@ -1509,7 +1546,7 @@ PrefabInstance:
     - target: {fileID: 6608671522727682123, guid: 9569016bd4b164537ab07bffffa59857,
         type: 3}
       propertyPath: dashSpeed
-      value: 30
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6608671522727682123, guid: 9569016bd4b164537ab07bffffa59857,
         type: 3}
@@ -1520,6 +1557,21 @@ PrefabInstance:
         type: 3}
       propertyPath: mass
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608671522727682123, guid: 9569016bd4b164537ab07bffffa59857,
+        type: 3}
+      propertyPath: moveSpeed
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608671522727682123, guid: 9569016bd4b164537ab07bffffa59857,
+        type: 3}
+      propertyPath: dashDistance
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608671522727682123, guid: 9569016bd4b164537ab07bffffa59857,
+        type: 3}
+      propertyPath: dashNoteType
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6608671522727682127, guid: 9569016bd4b164537ab07bffffa59857,
         type: 3}
@@ -1576,7 +1628,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4892105489094115425, guid: 9569016bd4b164537ab07bffffa59857, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 9569016bd4b164537ab07bffffa59857, type: 3}
 --- !u!1001 &6687423039218141361
 PrefabInstance:
