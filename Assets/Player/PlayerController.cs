@@ -2,8 +2,13 @@
 using UnityEngine;
 using UnityEngine.Audio;
 
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(BoxCollider2D))]
 public class PlayerController : MonoBehaviour
 {
+	public static System.Action OnPlayerDying;
+	public static System.Action OnPlayerDeath;
+
 	public static Transform playerTransform;
 
 	[Header("Move")]
@@ -32,9 +37,13 @@ public class PlayerController : MonoBehaviour
 	[SerializeField]
 	private AudioSource reloadAudioSource;
 
-	[Header("General")]
+	[Header("Death")]
 	[SerializeField]
-	private Rigidbody2D rb;
+	private DeathVfx deathVfx;
+	// [Header("Reload")]
+	// private 
+
+	[Header("General")]
 	[SerializeField]
 	private AudioMixerSnapshot mainSnapshot;
 
@@ -45,9 +54,12 @@ public class PlayerController : MonoBehaviour
 	private bool shootInput = false;
 	private bool reloadInput = false;
 
+	private Rigidbody2D rb;
+	private Collider2D col;
 	private RaycastHit2D[] hitBuffer = new RaycastHit2D[1];
 
 	private bool isReloading = false;
+	private bool isDead = false;
 	private float dashTimer;
 
 	private StateMachine fsm = new StateMachine();
@@ -56,12 +68,14 @@ public class PlayerController : MonoBehaviour
 	private const int STATE_DASH = 2;
 	private const int STATE_SHOOT = 3;
 	private const int STATE_RELOAD = 4;
+	private const int STATE_DEATH = 5;
 
 	#region LIFECYCLE
 
 	private void Awake()
 	{
 		rb = GetComponent<Rigidbody2D>();
+		col = GetComponent<BoxCollider2D>();
 
 		MusicStartAnnouncer.OnStart += Initialize;
 
@@ -72,6 +86,7 @@ public class PlayerController : MonoBehaviour
 		fsm.AddState(STATE_DASH, EnterDashState, null, ExitDashState);
 		fsm.AddState(STATE_SHOOT, EnterShootState, null, null);
 		fsm.AddState(STATE_RELOAD, EnterReloadState, null, ExitReloadState);
+		fsm.AddState(STATE_DEATH, EnterDeathState, null, null);
 
 		fsm.ChangeToState(STATE_IDLE);
 	}
@@ -96,6 +111,15 @@ public class PlayerController : MonoBehaviour
 	private void Update()
 	{
 		fsm.Update();
+	}
+
+	private void OnCollisionEnter2D(Collision2D collision)
+	{
+		if (isDead) return;
+		if (collision.gameObject.layer == PhysicsLayers.Enemy)
+		{
+			fsm.ChangeToState(STATE_DEATH);
+		}
 	}
 
 	#endregion
@@ -224,6 +248,25 @@ public class PlayerController : MonoBehaviour
 	private void ExitReloadState()
 	{
 		isReloading = false;
+	}
+
+	#endregion
+
+	#region STATE_DEATH
+
+	private void EnterDeathState()
+	{
+		OnPlayerDying?.Invoke();
+		StartCoroutine(Die());
+	}
+
+	private IEnumerator Die()
+	{
+		isDead = true;
+		rb.velocity = Vector2.zero;
+		rb.constraints = RigidbodyConstraints2D.FreezeAll;
+		yield return deathVfx.DeathRoutine();
+		OnPlayerDeath?.Invoke();
 	}
 
 	#endregion

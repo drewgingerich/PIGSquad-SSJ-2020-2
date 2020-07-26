@@ -14,6 +14,7 @@ public class FollowPlayerAndMouse : MonoBehaviour
 	void Awake()
 	{
 		MusicStartAnnouncer.OnStartLate += Initialize;
+		PlayerController.OnPlayerDying += HandlePlayerDying;
 	}
 
 	void Initialize(double startTime)
@@ -31,5 +32,11 @@ public class FollowPlayerAndMouse : MonoBehaviour
 		var mouseWorldPosition = Camera.main.ScreenToWorldPoint(aimInput);
 		var diff = (Vector3)mouseWorldPosition - player.position;
 		transform.position = player.position + diff * mouseImportance;
+	}
+
+	void HandlePlayerDying()
+	{
+		PlayerController.OnPlayerDying -= HandlePlayerDying;
+		mouseImportance = 0;
 	}
 }
