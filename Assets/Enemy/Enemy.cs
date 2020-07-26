@@ -35,7 +35,6 @@ public class Enemy : MonoBehaviour
 	private void HandleHit(Hit type, Vector2 direction)
 	{
 		StopAllCoroutines();
-		Debug.Log("Here");
 		StartCoroutine(TakeHit(direction));
 	}
 
