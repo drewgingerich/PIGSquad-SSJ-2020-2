@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+	public event System.Action<Enemy> OnDie;
 
 	[SerializeField]
 	private float speed = 3;
@@ -53,7 +54,7 @@ public class Enemy : MonoBehaviour
 		// yield return new WaitForNote(Note.Eighth);
 
 		bloodSpurtVfx.Destroy();
-		Destroy(gameObject);
+		OnDie?.Invoke(this);
 	}
 
 	public IEnumerator Quake()
