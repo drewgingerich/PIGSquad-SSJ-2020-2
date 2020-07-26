@@ -5,6 +5,14 @@ using UnityEngine;
 public class BeamController : MonoBehaviour
 {
 	[SerializeField]
+	private Note preFireNoteTime = Note.Quarter;
+	[SerializeField]
+	private int preFireNoteOffset = 1;
+	[SerializeField]
+	private float aimBeamWidth = 0.05f;
+	[SerializeField]
+	private float fireBeamWidth = 0.15f;
+	[SerializeField]
 	private LineRenderer beam;
 	[SerializeField]
 	private GameObject beamMech;
@@ -24,62 +32,75 @@ public class BeamController : MonoBehaviour
 		hitFilter.SetLayerMask(mask);
 	}
 
-	public void Fire(Vector2 direction, AudioSource audioSource)
+	public void Activate(Vector2 direction, AudioSource audioSource)
 	{
 		this.direction = direction;
 		this.audioSource = audioSource;
-		StartCoroutine(Activate());
+		StartCoroutine(ActivateRoutine());
 	}
 
-	private IEnumerator Activate()
+	private IEnumerator ActivateRoutine()
 	{
-		yield return new WaitForNote(Note.Eighth);
-		yield return new WaitForNote(Note.Sixteenth);
-		var hits = Physics2D.Raycast(transform.position, direction, hitFilter, hitBuffer);
+		beam.startWidth = beam.endWidth = aimBeamWidth;
+		beam.enabled = true;
 
-		if (hits > 0)
+		var aimTime = Conductor.GetNextNote(preFireNoteTime, preFireNoteOffset);
+		StartCoroutine(Aim(aimTime));
+		audioSource.PlayScheduled(Conductor.GetNextNote(preFireNoteTime, preFireNoteOffset));
+		yield return new WaitForNote(preFireNoteTime, preFireNoteOffset);
+
+		yield return Fire();
+
+		Destroy(gameObject);
+		// if (hits > 0)
+		// {
+		// 	var hitDetector = hitBuffer[0].collider.gameObject.GetComponent<HitDetector>();
+		// 	if (hitDetector != null) hitDetector.Hit(Hit.Shot, direction);
+		// }
+
+		GameObject.Destroy(gameObject);
+	}
+
+	private IEnumerator Aim(double targetTime)
+	{
+		while (targetTime > AudioSettings.dspTime)
 		{
-			var hitDetector = hitBuffer[0].collider.gameObject.GetComponent<HitDetector>();
-			if (hitDetector != null) hitDetector.Hit(Hit.Tag, direction);
-		}
+			var hits = Physics2D.Raycast(transform.position, direction, hitFilter, hitBuffer);
+			if (hits > 0)
+			{
+				GameObject other = hitBuffer[0].collider.gameObject;
+				if (other.layer == PhysicsLayers.Enemy)
+				{
+					var diff = (Vector2)(other.transform.position - transform.position);
+					direction = diff.normalized;
+				}
+			}
 
-		var endPoint = hits > 0
-			? (Vector3)hitBuffer[0].point
-			: transform.position + (Vector3)direction * 100;
-		var beamPositions = new Vector3[]{
+			var endPoint = hits > 0
+				? (Vector3)hitBuffer[0].point
+				: transform.position + (Vector3)direction * Mathf.Infinity;
+
+			var beamPositions = new Vector3[]{
 				transform.position,
 				endPoint
 			};
 
-		beam.SetPositions(beamPositions);
-		beam.startWidth = beam.endWidth = 0.05f;
-		beam.enabled = true;
+			beam.SetPositions(beamPositions);
 
-		audioSource.PlayScheduled(Conductor.GetNextNote(Note.Quarter, 1));
-		yield return new WaitForNote(Note.Quarter, 1);
-		beam.startWidth = beam.endWidth = 0.15f;
+			yield return null;
+		}
+	}
+
+	private IEnumerator Fire()
+	{
+		var hits = Physics2D.Raycast(transform.position, direction, hitFilter, hitBuffer);
+
+		beam.startWidth = beam.endWidth = fireBeamWidth;
+
 		CameraJuicer.Kick(direction);
 		CameraJuicer.Shake();
 
 		yield return new WaitForSeconds(0.1f);
 		beam.enabled = false;
-
-		if (hits > 0)
-		{
-			var hitDetector = hitBuffer[0].collider.gameObject.GetComponent<HitDetector>();
-			if (hitDetector != null) hitDetector.Hit(Hit.Shot, direction);
-		}
-
-		GameObject.Destroy(gameObject);
-	}
-
-	private IEnumerator Fire()
-	{
-		yield return new WaitForNote(Note.Quarter, 1);
-		beam.startWidth = beam.endWidth = 0.15f;
-		// shootAudioSource.Play();
-		yield return new WaitForSeconds(0.1f);
-		beam.enabled = false;
-		GameObject.Destroy(gameObject);
 	}
 }

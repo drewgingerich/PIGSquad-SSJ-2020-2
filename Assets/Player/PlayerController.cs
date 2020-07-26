@@ -47,7 +47,6 @@ public class PlayerController : MonoBehaviour
 
 	private RaycastHit2D[] hitBuffer = new RaycastHit2D[1];
 
-	private bool isShooting = false;
 	private bool isReloading = false;
 	private float dashTimer;
 
@@ -71,7 +70,7 @@ public class PlayerController : MonoBehaviour
 		fsm.AddState(STATE_IDLE, EnterIdleState, UpdateIdleState, null);
 		fsm.AddState(STATE_MOVE, EnterMoveState, UpdateMoveState, ExitMoveState);
 		fsm.AddState(STATE_DASH, EnterDashState, null, ExitDashState);
-		fsm.AddState(STATE_SHOOT, EnterShootState, null, ExitShootState);
+		fsm.AddState(STATE_SHOOT, EnterShootState, null, null);
 		fsm.AddState(STATE_RELOAD, EnterReloadState, null, ExitReloadState);
 	}
 
@@ -192,17 +191,14 @@ public class PlayerController : MonoBehaviour
 	private void EnterShootState()
 	{
 		shootInput = false;
-		isShooting = true;
+
+		Vector2 shootDirection = (aimInput - (Vector2)transform.position).normalized;
+
 		var go = Instantiate(beamControllerPrefab, transform.position, Quaternion.identity);
 		var beamController = go.GetComponent<BeamController>();
-		Vector2 direction = (aimInput - (Vector2)transform.position).normalized;
-		beamController.Fire(direction, shootAudioSource);
-		fsm.ChangeToState(STATE_MOVE);
-	}
+		beamController.Activate(shootDirection, shootAudioSource);
 
-	private void ExitShootState()
-	{
-		isShooting = false;
+		fsm.ChangeToState(STATE_MOVE);
 	}
 
 	#endregion
