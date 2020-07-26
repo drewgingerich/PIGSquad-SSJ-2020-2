@@ -4,9 +4,11 @@ using UnityEngine;
 public class DanceFloor : MonoBehaviour
 {
 	[SerializeField]
-	GameObject floor1;
+	private Note switchTimeNote = Note.Half;
 	[SerializeField]
-	GameObject floor2;
+	private GameObject floor1;
+	[SerializeField]
+	private GameObject floor2;
 
 	private void Start()
 	{
@@ -23,10 +25,10 @@ public class DanceFloor : MonoBehaviour
 	{
 		while (true)
 		{
-			yield return new WaitForNote(Note.Quarter);
+			yield return new WaitForNote(switchTimeNote);
 			floor1.SetActive(true);
 			floor2.SetActive(false);
-			yield return new WaitForNote(Note.Quarter);
+			yield return new WaitForNote(switchTimeNote);
 			floor1.SetActive(false);
 			floor2.SetActive(true);
 		}
