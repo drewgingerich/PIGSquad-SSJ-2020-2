@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
 	[SerializeField]
 	private float dashDuration = 0.2f;
 	[SerializeField]
+	private float dashCameraShake = 0.5f;
+	[SerializeField]
 	private AfterimageVfx afterimageVfxPrefab;
 
 	[Header("Shoot")]
@@ -166,6 +168,7 @@ public class PlayerController : MonoBehaviour
 		var vfx = Instantiate(afterimageVfxPrefab, rb.position, Quaternion.identity);
 		vfx.Run(direction, dashDistance, dashDuration, dashFraction);
 
+		CameraJuicer.Shake(dashCameraShake);
 		rb.velocity = direction * dashSpeed;
 
 		yield return new WaitForSeconds(dashDuration * dashFraction);
