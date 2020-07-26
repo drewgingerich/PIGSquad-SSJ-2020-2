@@ -1,21 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class BeamController : MonoBehaviour
 {
 	[SerializeField]
 	private Note preFireNoteTime = Note.Quarter;
 	[SerializeField]
-	private int preFireNoteOffset = 1;
+	private int preFireNoteOffset = 3;
 	[SerializeField]
 	private float aimBeamWidth = 0.05f;
 	[SerializeField]
 	private float fireBeamWidth = 0.15f;
+
 	[SerializeField]
 	private LineRenderer beam;
 	[SerializeField]
-	private GameObject beamMech;
+	private Transform ring;
 
 	private ContactFilter2D hitFilter = new ContactFilter2D();
 	private RaycastHit2D[] hitBuffer = new RaycastHit2D[1];
@@ -26,7 +28,7 @@ public class BeamController : MonoBehaviour
 	private void Awake()
 	{
 		// Logic below assumes this
-		Debug.Assert(preFireNoteOffset > 0);
+		Debug.Assert(preFireNoteOffset > 2);
 
 		var mask = LayerMask.GetMask(new string[] {
 			LayerMask.LayerToName(PhysicsLayers.Enemy),
@@ -47,9 +49,9 @@ public class BeamController : MonoBehaviour
 		beam.startWidth = beam.endWidth = aimBeamWidth;
 		beam.enabled = true;
 
-		var aimTime = Conductor.GetNextNote(preFireNoteTime, preFireNoteOffset);
-		StartCoroutine(Aim(aimTime));
-		audioSource.PlayScheduled(Conductor.GetNextNote(preFireNoteTime, preFireNoteOffset));
+		var fireTime = Conductor.GetNextNote(preFireNoteTime, preFireNoteOffset);
+		StartCoroutine(Aim(fireTime));
+		StartCoroutine(Spin(fireTime));
 		yield return new WaitForNote(preFireNoteTime, preFireNoteOffset - 1);
 
 		audioSource.PlayScheduled(Conductor.GetNextNote(preFireNoteTime));
@@ -95,6 +97,21 @@ public class BeamController : MonoBehaviour
 
 			yield return null;
 		}
+	}
+
+	private IEnumerator Spin(double targetTime)
+	{
+		var targetDuration = targetTime - AudioSettings.dspTime;
+
+		var rotateDuration = (float)(targetDuration - Conductor.noteDurations[Note.Quarter]);
+		var rotTween = ring.DOLocalRotate(new Vector3(0, 0, 45 * 17), rotateDuration, RotateMode.FastBeyond360);
+		yield return rotTween.WaitForCompletion();
+
+		yield return new WaitForNote(Note.Sixteenth);
+
+		var reverseDuration = (float)Conductor.noteDurations[Note.Sixteenth];
+		var revTween = ring.DOLocalRotate(new Vector3(0, 0, 0), reverseDuration, RotateMode.FastBeyond360);
+		yield return revTween.WaitForCompletion();
 	}
 
 	private IEnumerator Fire()
