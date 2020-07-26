@@ -23,11 +23,9 @@ public class Enemy : MonoBehaviour
 	{
 		switch (type)
 		{
-			case Hit.Tag:
-				Tag();
-				break;
 			case Hit.Shot:
-				Shot(direction);
+				StopAllCoroutines();
+				StartCoroutine(Shot(direction));
 				break;
 		}
 
@@ -42,21 +40,20 @@ public class Enemy : MonoBehaviour
 		}
 	}
 
-	public void Tag()
+	private IEnumerator Shot(Vector2 direction)
 	{
-		StopAllCoroutines();
-		StartCoroutine(Quake());
-	}
-
-	public void Shot(Vector2 direction)
-	{
-		StopAllCoroutines();
+		yield return new WaitForNote(Note.Eighth);
 
 		var bloodObject = Instantiate(bloodPrefab, transform.position, Quaternion.identity);
-		var bloodSpurt = bloodObject.GetComponent<BloodSpurt>();
-		bloodSpurt.Activate(direction);
+		var bloodSpurtVfx = bloodObject.GetComponent<BloodSpurt>();
+		bloodSpurtVfx.Start(direction);
+		yield return new WaitForNote(Note.Quarter, 3);
 
-		StartCoroutine(Die());
+		bloodSpurtVfx.Stop();
+		// yield return new WaitForNote(Note.Eighth);
+
+		bloodSpurtVfx.Destroy();
+		Destroy(gameObject);
 	}
 
 	public IEnumerator Quake()
@@ -104,12 +101,5 @@ public class Enemy : MonoBehaviour
 			transform.Translate(direction * speed * Time.deltaTime);
 			yield return null;
 		}
-	}
-
-	private IEnumerator Die()
-	{
-		yield return new WaitForNote(Note.Eighth);
-		hitDetector.OnHit -= HandleHit;
-		Destroy(gameObject);
 	}
 }
