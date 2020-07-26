@@ -63,7 +63,7 @@ public class PlayerController : MonoBehaviour
 	{
 		rb = GetComponent<Rigidbody2D>();
 
-		if (controls == null) WireControls();
+		MusicStartAnnouncer.OnStart += Initialize;
 
 		playerTransform = transform;
 
@@ -72,16 +72,14 @@ public class PlayerController : MonoBehaviour
 		fsm.AddState(STATE_DASH, EnterDashState, null, ExitDashState);
 		fsm.AddState(STATE_SHOOT, EnterShootState, null, null);
 		fsm.AddState(STATE_RELOAD, EnterReloadState, null, ExitReloadState);
-	}
 
-	private void OnEnable()
-	{
-		controls.Player.Enable();
 		fsm.ChangeToState(STATE_IDLE);
 	}
 
-	private void WireControls()
+	private void Initialize(double startTime)
 	{
+		MusicStartAnnouncer.OnStart -= Initialize;
+
 		controls = new PlayerInputActions();
 		controls.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
 		controls.Player.Dash.performed += ctx => dashInput = true;
@@ -92,17 +90,11 @@ public class PlayerController : MonoBehaviour
 		};
 		controls.Player.Shoot.performed += ctx => shootInput = true;
 		controls.Player.Reload.performed += ctx => reloadInput = true;
-	}
-
-	private void OnDisable()
-	{
-		controls.Player.Disable();
+		controls.Player.Enable();
 	}
 
 	private void Update()
 	{
-		Debug.Log("--------");
-		Debug.Log(moveInput);
 		fsm.Update();
 	}
 
@@ -141,7 +133,6 @@ public class PlayerController : MonoBehaviour
 		}
 
 		rb.velocity = moveInput * moveSpeed;
-		Debug.Log(rb.velocity);
 	}
 
 	private void ExitMoveState()

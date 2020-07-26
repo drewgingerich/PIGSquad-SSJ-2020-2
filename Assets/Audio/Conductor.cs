@@ -29,12 +29,12 @@ public class Conductor : MonoBehaviour
 
 	private void Awake()
 	{
-		MusicStartAnnouncer.OnStart += HandleStart;
+		MusicStartAnnouncer.OnStartEarly += HandleStart;
 	}
 
 	private void HandleStart(double startTime)
 	{
-		MusicStartAnnouncer.OnStart -= HandleStart;
+		MusicStartAnnouncer.OnStartEarly -= HandleStart;
 
 		Initialize(startTime);
 

@@ -9,15 +9,21 @@ public class FollowPlayerAndMouse : MonoBehaviour
 	[SerializeField]
 	private float mouseImportance = 0.5f;
 
-	private Vector2 aimInput;
+	private Vector2 aimInput = Vector2.zero;
 
-	void Start()
+	void Awake()
 	{
+		MusicStartAnnouncer.OnStartLate += Initialize;
+	}
+
+	void Initialize(double startTime)
+	{
+		MusicStartAnnouncer.OnStartLate -= Initialize;
+
 		PlayerController.controls.Player.Aim.performed += ctx =>
 		{
 			aimInput = ctx.ReadValue<Vector2>();
 		};
-
 	}
 
 	void Update()
