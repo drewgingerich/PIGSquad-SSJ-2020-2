@@ -49,8 +49,8 @@ public class BeamController : MonoBehaviour
 		audioSource.PlayScheduled(Conductor.GetNextNote(Note.Quarter, 1));
 		yield return new WaitForNote(Note.Quarter, 1);
 		beam.startWidth = beam.endWidth = 0.15f;
-		CamJuice.Kick(direction);
-		CamJuice.Shake();
+		CameraJuicer.Kick(direction);
+		CameraJuicer.Shake();
 
 		yield return new WaitForSeconds(0.1f);
 		beam.enabled = false;

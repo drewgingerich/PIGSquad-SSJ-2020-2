@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Cinemachine;
 
-public class CamJuice : MonoBehaviour
+public class CameraJuicer : MonoBehaviour
 {
 	[SerializeField]
 	private CinemachineImpulseSource kickSource;
@@ -10,7 +10,7 @@ public class CamJuice : MonoBehaviour
 	[SerializeField]
 	private CinemachineVirtualCamera virtualCam;
 
-	private static CamJuice inst;
+	private static CameraJuicer inst;
 
 	private void Awake()
 	{
