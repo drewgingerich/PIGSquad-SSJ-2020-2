@@ -25,6 +25,9 @@ public class BeamController : MonoBehaviour
 
 	private void Awake()
 	{
+		// Logic below assumes this
+		Debug.Assert(preFireNoteOffset > 0);
+
 		var mask = LayerMask.GetMask(new string[] {
 			LayerMask.LayerToName(PhysicsLayers.Enemy),
 			LayerMask.LayerToName(PhysicsLayers.Stage),
@@ -47,7 +50,10 @@ public class BeamController : MonoBehaviour
 		var aimTime = Conductor.GetNextNote(preFireNoteTime, preFireNoteOffset);
 		StartCoroutine(Aim(aimTime));
 		audioSource.PlayScheduled(Conductor.GetNextNote(preFireNoteTime, preFireNoteOffset));
-		yield return new WaitForNote(preFireNoteTime, preFireNoteOffset);
+		yield return new WaitForNote(preFireNoteTime, preFireNoteOffset - 1);
+
+		audioSource.PlayScheduled(Conductor.GetNextNote(preFireNoteTime));
+		yield return new WaitForNote(preFireNoteTime);
 
 		yield return Fire();
 
