@@ -71,7 +71,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: eefe7be8e89a44c1781628df051fcef5, type: 3}
-  m_Color: {r: 0, g: 0.97205925, b: 1, a: 1}
+  m_Color: {r: 0.6698113, g: 0.041073352, b: 0.34335116, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -126,6 +126,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd208c5bbfab8425ba85a0c2b44db2bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  preFireNoteTime: 8
+  preFireNoteOffset: 1
+  aimBeamWidth: 0.05
+  fireBeamWidth: 0.15
   beam: {fileID: 2316365970971686046}
   beamMech: {fileID: 0}
 --- !u!1 &7183194620445771712
@@ -221,8 +225,8 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0, g: 0, b: 0, a: 1}
-      key1: {r: 0, g: 0, b: 0, a: 1}
+      key0: {r: 1, g: 0.333, b: 0.8909946, a: 0.5686275}
+      key1: {r: 1, g: 0.333, b: 0.8909946, a: 0.5686275}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
