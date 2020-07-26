@@ -15,6 +15,15 @@ public class BeamController : MonoBehaviour
 	private Vector2 direction;
 	private AudioSource audioSource;
 
+	private void Awake()
+	{
+		var mask = LayerMask.GetMask(new string[] {
+			LayerMask.LayerToName(PhysicsLayers.Enemy),
+			LayerMask.LayerToName(PhysicsLayers.Stage),
+		});
+		hitFilter.SetLayerMask(mask);
+	}
+
 	public void Fire(Vector2 direction, AudioSource audioSource)
 	{
 		this.direction = direction;
