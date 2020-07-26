@@ -70,7 +70,7 @@ public class PlayerController : MonoBehaviour
 
 		fsm.AddState(STATE_IDLE, EnterIdleState, UpdateIdleState, null);
 		fsm.AddState(STATE_MOVE, EnterMoveState, UpdateMoveState, ExitMoveState);
-		fsm.AddState(STATE_DASH, EnterDashState, null, null);
+		fsm.AddState(STATE_DASH, EnterDashState, null, ExitDashState);
 		fsm.AddState(STATE_SHOOT, EnterShootState, null, ExitShootState);
 		fsm.AddState(STATE_RELOAD, EnterReloadState, null, ExitReloadState);
 	}
@@ -154,6 +154,7 @@ public class PlayerController : MonoBehaviour
 	private void EnterDashState()
 	{
 		dashInput = false;
+		gameObject.layer = PhysicsLayers.Phantom;
 		StartCoroutine(Dash());
 	}
 
@@ -174,6 +175,11 @@ public class PlayerController : MonoBehaviour
 		yield return new WaitForSeconds(dashDuration * dashFraction);
 
 		fsm.ChangeToState(STATE_MOVE);
+	}
+
+	private void ExitDashState()
+	{
+		gameObject.layer = PhysicsLayers.Player;
 	}
 
 	#endregion

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8457167217980911911}
   - component: {fileID: 1566152227284400763}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91,7 +91,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5952830623376875933}
   - component: {fileID: 5952830623376875922}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: BeamController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -127,6 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   beam: {fileID: 2316365970971686046}
+  beamMech: {fileID: 0}
 --- !u!1 &7183194620445771712
 GameObject:
   m_ObjectHideFlags: 0
@@ -137,7 +138,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8876621565303178481}
   - component: {fileID: 2316365970971686046}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Beam
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -13,11 +13,11 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Enemy
+  - Stage
+  - Player
+  - Phantom
+  - Beam
   - 
   - 
   - 

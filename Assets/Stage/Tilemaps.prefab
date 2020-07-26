@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2662794935016731787}
   - component: {fileID: 588004741484669615}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: DanceFloorController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -59,7 +59,7 @@ GameObject:
   - component: {fileID: 2753185277450413027}
   - component: {fileID: 8494866286236653465}
   - component: {fileID: 2418990865647591370}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Floor2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3854,7 +3854,7 @@ GameObject:
   - component: {fileID: 6687423038858381573}
   - component: {fileID: 6687423038858381575}
   - component: {fileID: 6687423038858381572}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Floor1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7666,7 +7666,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6687423039729028945}
   - component: {fileID: 6687423039729028974}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Tilemaps
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7715,7 +7715,7 @@ GameObject:
   - component: {fileID: 6687423039928695009}
   - component: {fileID: 6687423039928695038}
   - component: {fileID: 6687423039928695008}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Walls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
