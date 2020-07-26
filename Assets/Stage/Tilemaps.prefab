@@ -44,8 +44,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   switchTimeNote: 16
-  floor1: {fileID: 6687423038858381570}
-  floor2: {fileID: 880694179296908006}
+  floor1: {fileID: 6687423038858381575}
+  floor2: {fileID: 8494866286236653465}
+  color1: {r: 0.6039216, g: 0.80784315, b: 0.68235296, a: 0.14901961}
+  color2: {r: 0.6039216, g: 0.80784315, b: 0.68235296, a: 0.050980393}
 --- !u!1 &880694179296908006
 GameObject:
   m_ObjectHideFlags: 0
@@ -63,7 +65,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2753185277450413027
 Transform:
   m_ObjectHideFlags: 0
@@ -3772,7 +3774,7 @@ Tilemap:
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
-  m_Color: {r: 0.602705, g: 0.809, b: 0.68178475, a: 0.14901961}
+  m_Color: {r: 0.602705, g: 0.809, b: 0.68178475, a: 0}
   m_Origin: {x: -20, y: -11, z: 0}
   m_Size: {x: 39, y: 22, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
@@ -3858,7 +3860,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6687423038858381573
 Transform:
   m_ObjectHideFlags: 0
@@ -7585,7 +7587,7 @@ Tilemap:
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
-  m_Color: {r: 0.602705, g: 0.809, b: 0.68178475, a: 0.14901961}
+  m_Color: {r: 0.602705, g: 0.809, b: 0.68178475, a: 0}
   m_Origin: {x: -18, y: -11, z: 0}
   m_Size: {x: 37, y: 22, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}

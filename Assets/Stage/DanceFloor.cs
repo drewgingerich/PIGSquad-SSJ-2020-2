@@ -1,14 +1,20 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.Tilemaps;
+using DG.Tweening;
 
 public class DanceFloor : MonoBehaviour
 {
 	[SerializeField]
 	private Note switchTimeNote = Note.Half;
 	[SerializeField]
-	private GameObject floor1;
+	private Tilemap floor1;
 	[SerializeField]
-	private GameObject floor2;
+	private Tilemap floor2;
+	[SerializeField]
+	private Color color1;
+	[SerializeField]
+	private Color color2;
 
 	private void Start()
 	{
@@ -23,14 +29,23 @@ public class DanceFloor : MonoBehaviour
 
 	private IEnumerator DiscoTimeRoutine()
 	{
+		var floor1Color = color1;
+		var floor2Color = color2;
+
 		while (true)
 		{
-			yield return new WaitForNote(switchTimeNote);
-			floor1.SetActive(true);
-			floor2.SetActive(false);
-			yield return new WaitForNote(switchTimeNote);
-			floor1.SetActive(false);
-			floor2.SetActive(true);
+			Debug.Log("hello");
+
+			var targetTime = Conductor.GetNextNote(switchTimeNote);
+			var duration = (float)(targetTime - AudioSettings.dspTime);
+
+			DOTween.To(() => floor1.color, c => floor1.color = c, floor1Color, duration).SetEase(Ease.InExpo);
+			DOTween.To(() => floor2.color, c => floor2.color = c, floor2Color, duration).SetEase(Ease.InExpo);
+			yield return new WaitForDspTime(targetTime);
+
+			var temp = floor1Color;
+			floor1Color = floor2Color;
+			floor2Color = temp;
 		}
 	}
 }
