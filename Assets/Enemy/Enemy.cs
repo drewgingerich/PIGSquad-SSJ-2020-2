@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class Enemy : MonoBehaviour
 {
 	public event System.Action<Enemy> OnDie;
 
+	[SerializeField]
+	private float health = 2;
 	[SerializeField]
 	private float speed = 3;
 
@@ -13,6 +16,15 @@ public class Enemy : MonoBehaviour
 	private GameObject bloodPrefab;
 	[SerializeField]
 	private HitDetector hitDetector;
+
+	private Rigidbody2D rb;
+	private BloodSpurt bloodSpurtVfx;
+	private bool dead = false;
+
+	void Awake()
+	{
+		rb = GetComponent<Rigidbody2D>();
+	}
 
 	public void Activate()
 	{
@@ -22,14 +34,9 @@ public class Enemy : MonoBehaviour
 
 	private void HandleHit(Hit type, Vector2 direction)
 	{
-		switch (type)
-		{
-			case Hit.Shot:
-				StopAllCoroutines();
-				StartCoroutine(Shot(direction));
-				break;
-		}
-
+		StopAllCoroutines();
+		Debug.Log("Here");
+		StartCoroutine(TakeHit(direction));
 	}
 
 	private IEnumerator MoveLoop()
@@ -41,18 +48,41 @@ public class Enemy : MonoBehaviour
 		}
 	}
 
-	private IEnumerator Shot(Vector2 direction)
+	private IEnumerator TakeHit(Vector2 direction)
 	{
+		health -= 1;
+		if (health == 0) dead = true;
+
+		rb.velocity = Vector2.zero;
+
 		yield return new WaitForNote(Note.Eighth);
 
-		var bloodObject = Instantiate(bloodPrefab, transform.position, Quaternion.identity);
-		var bloodSpurtVfx = bloodObject.GetComponent<BloodSpurt>();
+		var bloodObject = Instantiate(bloodPrefab, transform);
+		bloodSpurtVfx = bloodObject.GetComponent<BloodSpurt>();
 		bloodSpurtVfx.Run(direction);
-		yield return new WaitForNote(Note.Quarter, 3);
 
+		if (dead)
+		{
+			StartCoroutine(Die());
+		}
+		else
+		{
+			StartCoroutine(Stumble());
+		}
+	}
+
+	private IEnumerator Stumble()
+	{
+		yield return new WaitForNote(Note.Sixteenth);
 		bloodSpurtVfx.Stop();
-		// yield return new WaitForNote(Note.Eighth);
+		bloodSpurtVfx.Destroy();
+		StartCoroutine(MoveLoop());
+	}
 
+	private IEnumerator Die()
+	{
+		yield return new WaitForNote(Note.Quarter, 3);
+		bloodSpurtVfx.Stop();
 		bloodSpurtVfx.Destroy();
 		OnDie?.Invoke(this);
 	}
@@ -81,7 +111,7 @@ public class Enemy : MonoBehaviour
 		var rotation = Random.Range(-10, 10);
 		var direction = Quaternion.AngleAxis(rotation, Vector3.back) * diff.normalized;
 		var targetTime = Conductor.GetNextNote(Note.Quarter);
-		yield return StartCoroutine(Move(direction, speed * 1.5f, targetTime));
+		yield return StartCoroutine(Move(direction * speed * 1.5f, targetTime));
 
 	}
 
@@ -91,15 +121,15 @@ public class Enemy : MonoBehaviour
 		var rotation = Random.Range(80, 120);
 		var direction = Quaternion.AngleAxis(rotation, Vector3.back) * diff.normalized;
 		var targetTime = Conductor.GetNextNote(Note.Quarter);
-		yield return StartCoroutine(Move(direction, speed, targetTime));
+		yield return StartCoroutine(Move(direction * speed, targetTime));
 
 	}
 
-	private IEnumerator Move(Vector2 direction, float speed, double targetTime)
+	private IEnumerator Move(Vector2 velocity, double targetTime)
 	{
 		while (AudioSettings.dspTime < targetTime)
 		{
-			transform.Translate(direction * speed * Time.deltaTime);
+			rb.velocity = velocity;
 			yield return null;
 		}
 	}
