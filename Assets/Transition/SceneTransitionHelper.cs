@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class SceneTransitionHelper : MonoBehaviour
 {
@@ -8,7 +7,7 @@ public class SceneTransitionHelper : MonoBehaviour
 
 	void Awake()
 	{
-		var currentScene = SceneManager.GetActiveScene();
+		var currentScene = gameObject.scene;
 		currentSceneIndex = currentScene.buildIndex;
 	}
 
