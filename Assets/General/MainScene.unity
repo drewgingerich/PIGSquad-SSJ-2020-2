@@ -1329,6 +1329,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2133188605}
   - component: {fileID: 2133188607}
+  - component: {fileID: 2133188606}
   m_Layer: 0
   m_Name: PlayerShoot
   m_TagString: Untagged
@@ -1350,6 +1351,20 @@ Transform:
   m_Father: {fileID: 1762097375}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2133188606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2133188604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8348d7afd961841dabe09abaa2eb55f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  quantization: 8
+  src: {fileID: 2133188607}
 --- !u!82 &2133188607
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1688,6 +1703,11 @@ PrefabInstance:
       propertyPath: moveSfx
       value: 
       objectReference: {fileID: 1147395816}
+    - target: {fileID: 508492014121246269, guid: 9569016bd4b164537ab07bffffa59857,
+        type: 3}
+      propertyPath: shootSfx
+      value: 
+      objectReference: {fileID: 2133188606}
     - target: {fileID: 6608671522727682122, guid: 9569016bd4b164537ab07bffffa59857,
         type: 3}
       propertyPath: m_Name

@@ -54,8 +54,9 @@ public class BeamController : MonoBehaviour
 		StartCoroutine(Spin(fireTime));
 		yield return new WaitForNote(preFireNoteTime, preFireNoteOffset - 1);
 
-		audioSource.PlayScheduled(Conductor.GetNextNote(preFireNoteTime));
-		yield return new WaitForNote(preFireNoteTime);
+		var waitTime = Conductor.GetNextNote(preFireNoteTime) - Conductor.noteDurations[Note.Thirtysecond];
+		yield return new WaitForDspTime(waitTime);
+		PlayerSfx.PlayShootSfx();
 
 		yield return Fire();
 

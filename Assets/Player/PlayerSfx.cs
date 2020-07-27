@@ -7,6 +7,8 @@ public class PlayerSfx : MonoBehaviour
 	private AudioSource moveSfx;
 	[SerializeField]
 	private AudioSource dashSfx;
+	[SerializeField]
+	private QueuedPlayer shootSfx;
 
 	private static PlayerSfx inst;
 
@@ -45,6 +47,11 @@ public class PlayerSfx : MonoBehaviour
 	{
 		playingMoveSfx = false;
 		inst.moveSfx.SetScheduledEndTime(Conductor.GetNextNote(Note.Eighth));
+	}
+
+	public static void PlayShootSfx()
+	{
+		inst.shootSfx.Play();
 	}
 
 	private void Awake()
