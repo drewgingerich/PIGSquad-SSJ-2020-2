@@ -98,11 +98,7 @@ public class PlayerController : MonoBehaviour
 		controls = new PlayerInputActions();
 		controls.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
 		controls.Player.Dash.performed += ctx => dashInput = true;
-		controls.Player.Aim.performed += ctx =>
-		{
-			var screenPoint = ctx.ReadValue<Vector2>();
-			aimInput = Camera.main.ScreenToWorldPoint(screenPoint);
-		};
+		controls.Player.Aim.performed += ctx => aimInput = ctx.ReadValue<Vector2>();
 		controls.Player.Shoot.performed += ctx => shootInput = true;
 		controls.Player.Reload.performed += ctx => reloadInput = true;
 		controls.Player.Enable();
@@ -207,7 +203,9 @@ public class PlayerController : MonoBehaviour
 	{
 		shootInput = false;
 
-		Vector2 shootDirection = (aimInput - (Vector2)transform.position).normalized;
+		var aimWorldPoint = Camera.main.ScreenToWorldPoint(aimInput);
+		var shootVector = (Vector2)(aimWorldPoint - transform.position);
+		var shootDirection = shootVector.normalized;
 
 		var go = Instantiate(beamControllerPrefab, transform.position, Quaternion.identity);
 		var beamController = go.GetComponent<BeamController>();
