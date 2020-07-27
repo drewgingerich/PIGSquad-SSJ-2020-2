@@ -34,7 +34,7 @@ public class EnemyGroup : MonoBehaviour
 		enemy.OnDie -= HandleEnemyDeath;
 		Destroy(enemy.gameObject);
 
-		Spawn(1);
+		Spawn(3);
 
 		if (group.Count == 0)
 		{

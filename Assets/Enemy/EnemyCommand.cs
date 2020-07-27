@@ -16,6 +16,6 @@ public class EnemyCommand : MonoBehaviour
 	void StartOnslaught(double startTime)
 	{
 		MusicStartAnnouncer.OnStart -= StartOnslaught;
-		group.Spawn(5);
+		group.Spawn(1);
 	}
 }
