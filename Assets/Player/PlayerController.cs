@@ -131,6 +131,8 @@ public class PlayerController : MonoBehaviour
 	{
 		if (shootInput) fsm.ChangeToState(STATE_SHOOT);
 		else if (moveInput != Vector2.zero) fsm.ChangeToState(STATE_MOVE);
+
+		rb.velocity = Vector2.zero;
 	}
 
 	#endregion
